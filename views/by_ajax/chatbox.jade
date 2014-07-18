@@ -1,0 +1,21 @@
+div(class="chatbox_" attr_private="#{data.id}" class="chatbox" ng-controller="chatBoxes" style="bottom: 0px; right: 20px; display: block;")
+	div(class="chatboxhead")
+		div(class="chatboxtitle")= data.pseudo
+		div(class="chatboxoptions")
+			a(href="") -
+			&nbsp
+			a(href="#" ng-click="closeTchatBox($event, event)") x
+		br(clear="all")
+	div(class="chatboxcontent")
+		each obj_message in messages
+			if (obj_message.id_user_sender == data.id)
+				p(class="mess")
+					b(style="color:red;")= data.pseudo
+					|  : 
+					= obj_message.message
+			else
+				p(class="mess")
+					b Moi : 
+					= obj_message.message
+	div(class="chatboxinput")
+		textarea(class="chatboxtextarea" ng-model="message" ng-keyup="isTypingAMessage(message, $event, event)" ng-enter="emitMessage($event, message, event)" attr_private="#{data.id}")

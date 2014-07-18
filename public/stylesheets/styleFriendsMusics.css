@@ -1,0 +1,561 @@
+
+/***** JPAGES ******/
+
+.holder {
+	margin: 15px 0;
+}
+
+.holder a {
+	font-size: 14px;
+	cursor: pointer;
+	margin: 0 5px;
+	color: #333;
+}
+
+.holder a:hover {
+	background-color: #222;
+	color: #fff;
+}
+
+.strike {
+  text-decoration: line-through;
+}
+
+.holder a.jp-previous { margin-right: 15px; }
+.holder a.jp-next { margin-left: 15px; }
+
+.holder a.jp-current, a.jp-current:hover { 
+	color: #FF4242;
+	font-weight: bold;
+}
+
+.holder a.jp-disabled, a.jp-disabled:hover {
+	color: #bbb;
+}
+
+.holder a.jp-current, a.jp-current:hover,
+.holder a.jp-disabled, a.jp-disabled:hover {
+	cursor: default; 
+	background: none;
+}
+
+.col-md-2 {
+	width : 0px;
+}
+
+.holder span { margin: 0 5px; }
+
+/*****/
+
+
+
+/****
+*
+*	MAIN css rules 
+*
+****/
+
+/****
+*
+*	COLOR 
+*		#95A5A6
+*
+****/
+
+.container {
+	font-family: "Lucida Grande", "Arial", sans-serif;
+}
+
+.container .actionWithUser {
+	font-size:12px; background-color: #f8f8f8;border-color: #d8d8d8;color: #666;
+}
+
+.container .actionWithUser:hover {
+	background-color: white;
+}
+
+#tracksListMusics {
+	width : 800px;
+	margin-top : 3%;
+	float : left;
+	font-family: "Lucida Grande", "Arial", sans-serif;
+	font-size: 13px;
+}
+
+#tracksListMusics .track {
+	height: 35px;
+}
+
+#tracksListMusics .track .choose_music {
+	;
+}
+
+#tracksListMusics .one {
+	background-color: rgba(255, 255, 255, 1);
+}
+
+#tracksListMusics .two {
+	background-color: rgba(86,61,124,.08);
+}
+
+#tracksListMusics .row {
+	margin-left: 0px;
+}
+
+#tracksListMusics .track .col-md-1 {
+	margin-top:8px;
+	margin-left:0px;
+}
+
+#tracksListMusics .track .song_title {
+	font-weight:bold; color:#666; letter-spacing: -0.6px;
+}
+
+
+
+#tracklist {
+	float : left;
+}
+
+#tracklist, #tracklist-youtube, #tracklist-shared {
+	width : 770px;
+	margin-top : 5%;
+	background-color : #428bca;
+	text-shadow: white 0px 0px 8px;
+	-webkit-border-radius: 7px;
+	-moz-border-radius: 7px;
+	border-radius: 7px;
+}
+
+#tracklist .track, #tracklist-youtube .track, #tracklist-shared .track {
+	padding-top : 10px;
+	padding-bottom : 10px;
+	padding-left: 10px;
+	max-width:770px;
+}
+
+#tracklist .track .title {
+	font-weight:bold;
+}
+
+#tracklist .choose_music {
+	font-size: 13px;
+}
+
+#tracklist-youtube {
+	margin-top:2%;
+	max-height:655px;
+	overflow: scroll;
+}
+
+#tracklist-shared .user_from {
+	font-size: 11px;
+	color : white;
+}
+
+#tracksListMusics .inputEditSong {
+	background: #fff;
+	border: 1px solid #CFCFCF;
+	width: 155px;
+	height: 24px;
+	border-radius: 2px;
+	margin: 0 auto;
+	padding: 0 25px 0 5px;
+	color: #999;
+	font-size: 11px;
+	font-weight: bold;
+}
+
+
+/* button repeat on media player */
+.white {
+	color: #fff;
+	margin-top : 8px;
+	cursor : pointer;
+}
+
+.hallo {
+	text-shadow: white 0px 0px 8px;
+	-webkit-border-radius: 7px;
+	-moz-border-radius: 7px;
+	border-radius: 7px;
+}
+
+.delete_block {
+	float : right;
+}
+
+#contextMenu {
+  position: absolute;
+  display:none;
+}
+
+.col-md-2 {
+	margin-left: -2%;
+}
+
+.border-selected {
+	border: 4px solid white;
+}
+
+.btn-custom {
+  background-color: hsl(0, 0%, 16%) !important;
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr="#5b5b5b", endColorstr="#282828");
+  background-image: -khtml-gradient(linear, left top, left bottom, from(#5b5b5b), to(#282828));
+  background-image: -moz-linear-gradient(top, #5b5b5b, #282828);
+  background-image: -ms-linear-gradient(top, #5b5b5b, #282828);
+  background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #5b5b5b), color-stop(100%, #282828));
+  background-image: -webkit-linear-gradient(top, #5b5b5b, #282828);
+  background-image: -o-linear-gradient(top, #5b5b5b, #282828);
+  background-image: linear-gradient(#5b5b5b, #282828);
+  /*border-color: #282828 #282828 hsl(0, 0%, 11%);*/
+  color: #fff !important;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.33);
+  -webkit-font-smoothing: antialiased;
+}
+
+#myModal .modal-body{
+	background-color : #2ECC71;
+}
+
+#pagination_playlist {
+	margin-top : 10px;
+}
+
+#pagination_playlist button {
+	-webkit-border-radius: 7px;
+	-moz-border-radius: 7px;
+	border-radius: 7px;
+}
+
+.loader_center_ {
+	position: absolute;
+    left: 50%;
+    top: 50%;
+    display: block;
+}
+
+.section_loader_black {
+	float:left;
+	width:15px;
+	height:15px;
+	text-align: center;
+	font-size: 16px;
+	font-family: sans-serif;
+	color : black;
+	text-shadow: none;	
+}
+
+.loader_ {
+	width : 8px;
+	height: 8px;
+	display : inline-block;
+	vertical-align: middle;
+	position: relative;
+}
+
+
+.loader_cercle_black {
+	width: 15px;
+	height: 15px;
+	position: relative;
+	border-radius : 15px;
+	border : 2px solid rgba(255, 255, 255, 1);
+}
+
+.loader_cercle_black:after{
+	content : "";
+	position: absolute;
+	top: -4px; left: -4px; bottom: -4px; right: -4px;
+	border: 4px solid transparent;
+	border-radius: 50px;
+	border-top-color : black;
+	/*-webkit-animation : spin 1s linear 0s infinite;*/
+	/*animation : spin 1s linear 0s infinite;*/
+}
+
+@-webkit-keyFrames spin {
+	0% { -webkit-transform : rotate(0deg); }
+	100% { -webkit-transform : rotate(360deg); }
+}
+
+@keyFrames spin {
+	0% {transform : rotate(0deg); }
+	100% {transform : rotate(360deg); }
+}
+
+.play_sound_animation, .pause_sound_animation {
+	display: inline-block;
+	margin-left: 10px;
+	width: 15px;
+}
+
+.play_sound_animation span {
+	background-color: #e67e22;
+	width : 3px;
+	height: 14px;
+	/*vertical-align: middle;*/
+	display: inline-block;
+	-webkit-animation : play_sound 1s infinite;
+}
+
+.play_sound_animation span:nth-of-type(2) {
+	-webkit-animation-delay: 0.4s;
+	margin-left: 2px;
+}
+
+.play_sound_animation span:nth-of-type(3) {
+	-webkit-animation-delay: 0.6s;
+	margin-left: 2px;
+}
+
+@-webkit-keyFrames play_sound {
+	0% {
+		width: 3px;
+		height: 6px;
+		opacity: 1;
+	}
+
+	100% {
+		width: 3px;
+		height: 14px;
+		opacity: 0.5;
+	}
+}
+
+.pause_sound_animation span {
+	color: #e67e22;
+	width: 2px;
+	height: 2px;
+	/*vertical-align: middle;*/
+	display: inline-block;
+	-webkit-animation : pause_sound 1s infinite;
+}
+
+.pause_sound_animation span:nth-of-type(2) {
+	-webkit-animation-delay: 0.4s;
+	margin-left: 4px;
+}
+
+.pause_sound_animation span:nth-of-type(3) {
+	-webkit-animation-delay: 0.6s;
+	margin-left: 4px;
+}
+
+
+@-webkit-keyFrames pause_sound {
+	0% {
+		opacity: 0.5;
+	}
+
+	100% {
+		opacity: 1;
+	}
+}
+
+
+#friendslist {
+	width : 140px;
+	float : right;
+	min-height: 280px;
+	margin-top : 29px;
+	background-color: rgba(86,61,124,.08);
+	font-family: "Lucida Grande", "Arial", sans-serif;
+	font-size: 12px;
+}
+
+#friendslist .infos_friend {
+	padding : 5px 0px 5px 5px;
+	margin : 0;
+	color : black;
+	font-weight: normal;
+}
+
+#friendslist .infos_friend:hover {
+	cursor : pointer;
+	background-color: #e67e22;
+}
+
+#searchFriendsFilter {
+	margin-top : 5px;
+	text-align: center;
+}
+
+#searchFriendsFilter .search-friends {
+	background: #fff url(/images/loupe.gif) 110px 50% no-repeat;
+	border: 1px solid #CFCFCF;
+	width: 130px;
+	height: 24px;
+	border-radius: 2px;
+	margin: 0 auto;
+	padding: 0 25px 0 5px;
+	color: #999;
+	font-size: 11px;
+	font-weight: bold;
+}
+
+#friendslist .block_friend {
+	margin-top:5px;
+}
+
+#friendslist .block_friend .state {
+	width:7px;
+	height: 8px;
+	float : right;
+	margin-top:10px;
+	margin-right: 10px;
+	border: 1px solid white;
+	border-radius: 10px;
+}
+
+#friendslist .block_friend .not_connected {
+	background-color:silver;
+}
+
+#friendslist .block_friend .connected {
+	background-color:#55ff00;
+}
+
+/***** CHAT BOXES *****/
+.chatbox {
+	position: fixed;
+	position:expression("absolute");
+	width: 200px;
+	display:none;
+}
+
+.chatboxhead {
+	background-color: #f99d39;
+	padding:4px;
+	color: #ffffff;
+
+	border-right:1px solid #f99d39;
+	border-left:1px solid #f99d39;
+}
+
+.chatboxcontent {
+	font-family: "Lucida Grande", "Arial", sans-serif;
+	font-size: 12px;
+	color: #333333;
+	height:200px;
+	overflow-y:auto;
+	overflow-x:auto;
+	padding:7px;
+	border-left:1px solid #cccccc;
+	border-right:1px solid #cccccc;
+	border-bottom:1px solid #eeeeee;
+	background-color: #ffffff;
+	line-height: 1.3em;
+}
+
+.chatboxinput {
+	padding: 5px;
+	background-color: #ffffff;
+	border-left:1px solid #cccccc;
+	border-right:1px solid #cccccc;
+	border-bottom:1px solid #cccccc;
+}
+
+.chatboxtextarea {
+	width: 185px;
+	height: 30px;
+	padding:3px 0pt 3px 3px;
+	border: 1px solid #eeeeee;
+	margin: 1px;
+	overflow:hidden;
+}
+
+.chatboxtextareaselected {
+	border: 2px solid #f99d39;
+	margin:0;
+}
+
+.chatboxmessagecontent {
+}
+
+.chatboxoptions {
+	float: right;
+}
+
+.chatboxoptions a {
+	text-decoration: none;
+	color: white;
+	font-weight:bold;
+	font-family:Verdana,Arial,"Bitstream Vera Sans",sans-serif;
+}
+
+.chatboxtitle {
+	float: left;
+}
+
+/*
+FOOTER
+*/
+footer {
+	text-align: center;
+	padding: 30px 0;
+	margin-top: 70px;
+	border-top: 1px solid #e5e5e5;
+	background-color: #f5f5f5;
+}
+
+.clear{ clear:both;}
+.fbbg{background:#374F8A;}
+.spritimg{ background-image:url(/images/facebook-icon.png);}
+.facebook{width:130px; margin:0px auto; background-color:#428bca; padding:3px 3px 3px 3px; border-radius:5px;}
+.facebook ul{ margin:0px; padding:0px;}
+.facebook ul li{margin:0px 5px 0px 0px; padding:0px; float:left; list-style:none; width:36px;}
+.facebook ul li a{ display:block; text-indent:-9999px; height:32px; width:36px; cursor:pointer;}
+.facebook ul li a:hover{opacity:1;}
+
+/* Icon Normal state*/
+.friendnormal{background-position:-10px -6px;}
+.messagenormal{background-position:-66px -118px;}
+.nottifinormal{background-position:-116px -116px;}
+
+/* Icon highlight state*/
+.notifriend{ background-position:-10px -66px;}
+.notimesg{ background-position:-66px -180px;}
+.notinotg{ background-position:-116px -180px;}
+
+.notifriendhover{background-position:-87px -101px;}
+.notireqsch{ background-position:-86px -124px;}
+.notireqschhover{background-position:-108px -124px;}
+.notimesghover{background-position:-112px -102px;}
+.notired{ display:block; background:#E43C03; text-align:center; color:#FFF; font-size:12px; font-weight:bold; -moz-border-radius:6px; -webkit-border-radius:6px; border-radius:6px; width:14px; z-index:1; margin:0px 1px 0px 18px; position:absolute; padding:1px;}
+
+#thread_Tchatmessages
+{
+	z-index : 1000;
+	position:absolute;
+	width: 350px;
+	right:0px;
+	left:-100px;
+	font-family:arial,sans-serif;font-size:13px;
+}
+
+#thread_Tchatmessages .panel-body {padding:5px;}
+#thread_Tchatmessages .panel-heading {text-align:center; font-weight:bold;}
+
+.contentBox {
+	cursor : pointer;
+}
+
+.popover-title {
+	text-align: center;
+}
+
+.popover-content {
+	padding : 5px 5px;
+}
+
+.block_ {
+
+	margin-left :40px;
+}
+
+.pseudo {
+
+	font-weight: bold;
+}

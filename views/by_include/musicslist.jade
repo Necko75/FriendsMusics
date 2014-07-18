@@ -1,0 +1,32 @@
+div(id="tracksListMusics" ng-controller="addNewSong")
+	div(class="track row two" ng-repeat="music in musics" my-post-repeat-directive)
+		div(class="choose_music" ng-model="soundSelected")
+			div(class="col-md-1")
+				span(ng-if="music.favorite == true" class="glyphicon glyphicon-heart" ng-click="removeFromFavorite(music, $index)" style="cursor:pointer;")
+				span(ng-if="music.favorite != true" class="glyphicon glyphicon-heart-empty" ng-click="addToFavorite(music, $event)" style="cursor:pointer;")
+				&nbsp;
+				span(class="glyphicon glyphicon-play span_reading")
+
+			div(class="col-md-4 div_reading" style="margin-top:9px;")
+				span(class="" style="color:grey;")
+					{{$index}} &nbsp;
+				input(type="text" ng-model="music.name" autocomplete="off" class="inputEditSong ng-pristine ng-valid" ng-show="music == editingSong")
+				a(href="#" class="musicChosen" ng-click="play_media(music, $event, $index)" ng-show="!(music == editingSong)")
+					span(class="song_title")
+						{{music.name}}
+
+			div(class="col-md-4" style="margin-top:8px;")
+				input(type="text" ng-model="music.author" autocomplete="off" class="inputEditSong ng-pristine ng-valid" ng-show="music == editingSong")
+				span(class="song_author" ng-show="!(music == editingSong)")
+					{{music.author}}
+
+			div(class="col-md-3" style="text-align:right;")
+				a(href="#" class="edit_song")
+					span(class="glyphicon glyphicon-ok" style="margin-top:8px; margin-right:14px;" ng-if="music == editingSong" ng-click="submitEditSong(music)")
+					span(class="glyphicon glyphicon-edit" style="margin-top:8px;" ng-if="!(music == editingSong)" ng-click="editSong(music)") &nbsp;
+
+				a(href="#/Sharesong/{{music.id}}/{{music.name}}" style="margin-top:8px;")
+					span(class="glyphicon glyphicon-share") &nbsp;
+
+				a(href="#" style="margin-top:8px;" class="remove_music" ng-click="removeMusic(music, $event, $index)")
+					span(class="glyphicon glyphicon-trash")

@@ -1,0 +1,45 @@
+doctype html
+html
+  head
+    meta(charset="UTF-8")
+    link(href="//maxcdn.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css", rel="stylesheet")
+    link(rel='stylesheet', href='/stylesheets/styleFriendsMusics.css')
+    link(rel="stylesheet", href="/stylesheets/mediaelement.css" type="text/css")
+  body
+    div(class="container" style="max-width:1000px;" ng-app="playlistModule")
+      div(class="header")
+        ul(class="nav nav-pills pull-right")
+          li(class="active")
+            a(href="#") Home
+          li
+            a(href="#") About
+          li
+            a(href="#") Contact
+        h3(class="text-muted") Playlists
+
+      block content
+
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  script(src="http://netdna.bootstrapcdn.com/bootstrap/3.0.2/js/bootstrap.min.js")
+  script(src="/javascripts/src/angular.js")
+  script(src="/javascripts/src/ui_bootstrap.js")
+  script(src="/socket.io/socket.io.js")
+  script(src="/javascripts/src/soundcloud_api.js")
+  script(src="/javascripts/src/angular_routes.js")
+  script(src="/javascripts/src/jpage.js")
+  script(src="/javascripts/FriendsMusics/controllers/controller.js")
+  script(src="/javascripts/FriendsMusics/controllers/controller_song.js")
+  script(src="/javascripts/FriendsMusics/controllers/controller_FriendsList.js")
+  script(src="/javascripts/FriendsMusics/controllers/controller_chatboxes.js")
+  script(src="/javascripts/FriendsMusics/controllers/controller_ShareSong.js")
+  script(src="/javascripts/FriendsMusics/controllers/controller_notifications.js")
+  script(src="/javascripts/FriendsMusics/routes.js")
+  script(src="/javascripts/FriendsMusics/services/factory.js")
+  script(src="/javascripts/src/mediaelement.js")
+  script(src="/javascripts/FriendsMusics/player.js")
+
+  footer(class="footer")
+    div(class="container")
+      p Designed and built with all the love in the world by Necko
+      p Voir page contact pour me contacter
+      p Copyrights - 2013 / 2014

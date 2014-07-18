@@ -1,0 +1,21 @@
+extends layout
+block content
+	div(id="view_" ng-app="todoMVC")
+		section(id='todoapp', class='ng-scope' ng-controller="TodoCtrl")
+			header(id='header')
+				h1 todos
+				form(id='todo-form', class='ng-pristine ng-valid' ng-submit="addTodo()")
+					input(id='new-todo', ng-model="newTodo", placeholder='new task ?', autofocus="", class='ng-pristine', autocomplete="false")
+			section(id='main' ng-show="todos.length")
+				input(id='toggle-all', type='checkbox', ng-model="allChecked" ng-click="markAll(allChecked)", class="ng-pristine ng-valid")
+				ul(id="todo-list")
+					li(class="ng-scope", ng-repeat="todo in todos", ng-class="{completed: todo.completed, editing: todo == editedTodo}")
+						div(class="view")
+							input(class="toggle ng-pristine ng-valid", type="checkbox" ng-model="todo.completed")
+							label(ng-dblclick="editTodo(todo)", class="ng-binding") {{todo.todo}}
+							button(class="destroy" ng-click="removeTodo(todo)")
+						form(ng-submit="doneEditing(todo)" class="ng-pristine ng-valid")
+							input(class="edit ng-pristine ng-valid", ng-model="todo.title" todo-escape="revertEditing(todo)" ng-blur="doneEditing(todo)", todo-focus="todo == editedTodo")
+		p(class="peu_importe")
+			a(href="#/new/") Add a Task
+		div(ng-view)

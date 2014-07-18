@@ -1,0 +1,13 @@
+div(class="panel panel-default" id="thread_Tchatmessages" ng-controller="Notifications")
+  div(class="panel-heading") Thread messages
+    a(class="close" ng-click="closeThredMessages()") close
+  div(class="panel-body")
+    div(ng-init="Messages=#{JSON.stringify(data)}")
+      div(ng-repeat="message in Messages" class="contentBox" ng-click="showTchatBoxMessages(message)")
+        div
+          div(class="clearfix" style="background-color:#f7f7f7; margin-bottom:5px;")
+            div(class="photo" style="float:left;")
+              img(src="/images/icone_profil.jpg")
+            div(class="block_")
+              div(class="pseudo") {{message.pseudo}}
+              div(class="mess") {{message.message}}

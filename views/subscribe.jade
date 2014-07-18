@@ -1,0 +1,13 @@
+extend layout
+block content
+	div(id="subscribe")
+		h2 Subscribe
+		form(action="/subscribeProcess", method="post")
+			fieldset
+				label(for="name") Pseudo
+				input(type="text" name="pseudo" placeholder="Votre pseudo")
+
+				label(for="password") Password
+				input(type="password" name="password" placeholder="Votre mot de passe")
+
+				input(type="submit" value="Envoyer")

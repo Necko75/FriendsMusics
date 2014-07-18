@@ -1,0 +1,46 @@
+extend layout
+block content
+	include by_include/small_modal
+	div
+		br
+		div(id="contentPlayerVideo")
+		br
+		iframe(id="sc-widget" width="100%" height="166" scrolling="no" frameborder="no" src="https://w.soundcloud.com/player/?url=https://soundcloud.com/christianloeffler/detektor-fm-mix&show_artwork=true")
+
+		div(ng-controller="playlistController")
+
+			div(class="current_song row" ng-model="soundSelected" ng-show="soundSelected")
+				div(class="col-md-4")
+					a(href="#" ng-click="targetSong(soundSelected)" id="link_sound_selected")
+						p(class="") 
+							b {{soundSelected.name}} - {{soundSelected.author}}
+			br
+			br
+
+			a(id="on_the_go" ng-click="getFavorites()" class="btn btn-default actionWithUser")
+				span(class="glyphicon glyphicon-heart")
+				span(title="" style="margin-left:2px;")= 'favorites'
+			|  
+			a(href="#/addSong/" class="no_open" id="add_song_to_current_playlist" class="btn btn-default actionWithUser add_song")
+				span(class="glyphicon glyphicon-plus")
+				span(title="" style="margin-left:2px;")= 'add song'
+			|  
+			a(href="#/search/" class="no-open")
+				button(type="button" class="btn btn-primary search_song")= 'Search'
+			| 
+			div(class="btn-group")
+				select(class="form-control" style="width : 150px;" ng-model="playlist_selected" ng-options="playlist.name for playlist in playlists" ng-change="change_playlist()")
+					option(value="publish_date")'Ascending'
+
+			div(class="btn-group" style="float:right; margin-right:150px;")
+				include by_include/notifications_menu
+
+			div(ng-view)
+
+			div
+				include by_include/musicslist
+
+				div(id="friendslist" ng-controller="FriendsList" ng-init="friendList=#{JSON.stringify(data)}" my-post-ng-init-directive)
+					include by_include/friendslist
+			div(class="holder")
+			div(id="allChatBox")

@@ -1,0 +1,13 @@
+div(ng-controller="ShareSong")
+	br
+	div(class="alert alert-info" style="margin-bottom:0px;") Select the friend that you want share the song selected 
+		b {{name_song}}
+	div(class="pickup")
+		form(role="form" novalidate)
+			div(class="form-group")
+				label(for="select_friend") 
+				select(class="form-control" style="width : 150px;" ng-model="friend" ng-options="friend.pseudo for friend in friends")
+				div
+			button(type="submit" class="btn btn-default" ng-click="submitShare()") Submit
+			&nbsp;
+			button(type="submit" class="btn btn-default" ng-click="close()") Cancel

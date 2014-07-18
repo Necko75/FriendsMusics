@@ -1,0 +1,14 @@
+div(class="maindiv facebook")
+	ul
+		li
+			span(class="notired")
+			a(class="showfrindreq mesgnotfctn spritimg friendnormal" title="Click to View Friend Requests") ws
+
+		li(ng-click="getThreadListMessages($event)")
+			span(class="notired" id="messages_received") 0
+			a(class="showmesgreq spritimg messagenormal" title="Click to View New Messages") ws
+
+		li
+			span(class="notired" id="shared_song_") #{notifs[0].total_notifs}
+			a(class=notifs[0].total_notifs == 0 ? "showmesgreq spritimg nottifinormal" : "showmesgreq spritimg nottifinormal notinotg" title="Click to View Notifications" href="#/notifications/") ws
+		div(class="clear")

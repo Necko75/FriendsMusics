@@ -1,0 +1,5 @@
+http://gdata.youtube.com/feeds/api/videos/w96GSHzpedA?v=2&alt=jsonc
+avec "w96GSHzpedA" = id de la vidéo youtube.
+
+Ex : rone - flesh, url : https://www.youtube.com/watch?v=w96GSHzpedA
+le fichier json récupéré va permettre d'obtenir le titre de la vidéo ... "title":"Rone - Flesh"

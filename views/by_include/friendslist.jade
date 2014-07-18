@@ -1,0 +1,7 @@
+div(id="searchFriendsFilter")
+	input(type="text" class="search-friends" placeholder="recherche" autocomplete="off" ng-model="filterSearchFriends")
+div(class="block_friend")
+	p(class="infos_friend" ng-click="popupFriendConversation(friend)" ng-repeat="friend in friendList | filter:filterSearchFriends" index="{{friend.id}}")
+		img(src="/images/icone_profil.jpg")
+		item(style="margin-left:5px;") {{friend.pseudo}}
+		span(class="state not_connected")
