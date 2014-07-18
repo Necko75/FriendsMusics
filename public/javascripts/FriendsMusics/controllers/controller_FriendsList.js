@@ -85,7 +85,7 @@ playlistModule.controller('FriendsList', function FriendsList($scope, $location,
 	    	var template = $(template);
 			var decal_ = 20;
 			if ($scope.array_chatboxes.length > 0)
-				var decal_ = 250 * $scope.array_chatboxes.length;
+				var decal_ = 225 * $scope.array_chatboxes.length;
 			template.removeAttr("style").css({"bottom" : "0px", "right" : decal_ + 'px', "display" : "block"});
 			$scope.array_chatboxes.push(friend.id);
 			angular.element('#allChatBox').append($compile(template)($scope));
