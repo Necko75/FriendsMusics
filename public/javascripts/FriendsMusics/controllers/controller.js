@@ -7,13 +7,14 @@ var playlistModule = angular.module('playlistModule', ['ngRoute', 'ui.bootstrap'
 		}
 	})
 
-playlistModule.controller('playlistController', function playlistController($timeout, $scope, $location, playlistStorage, $rootScope, $templateCache, $compile, $cacheFactory) {
+playlistModule.controller('playlistController', function playlistController($timeout, $scope, $location, playlistStorage, funcFactory, $rootScope, $templateCache, $compile, $cacheFactory) {
 
 	$scope.playlist_selected = undefined;
 	$scope.cache = $cacheFactory('cacheId');
 	$rootScope.socket = io.connect('http://localhost:3000');
-
+	$scope.divholder = angular.element('div.holder');
 	$scope.soundSelected = undefined;
+	$scope.paginator = undefined;
 
 	playlistStorage.getUserPlaylists().success(function(data) {
 		$scope.playlists = data;
@@ -28,12 +29,18 @@ playlistModule.controller('playlistController', function playlistController($tim
 			$templateCache.removeAll();
 	});
 
+	// function lancé à chaque fois que le ng-repeat del la list de musique se termine //
 	$scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent) {
 
 		console.log('ngreapeat');
-		$('div.holder').jPages({
+		if ($scope.divholder.size() > 0 && $scope.paginator !== undefined)
+			$scope.divholder.jPages("destroy");
+		$scope.divholder.jPages({
 			containerID : "tracksListMusics",
 			perPage : 8,
+			callback : function() {
+				$scope.paginator = this;
+			}
 		});
 
 		$('#tracksListMusics').find('.track').each(function() {
@@ -53,18 +60,8 @@ playlistModule.controller('playlistController', function playlistController($tim
 			console.log($scope.soundSelected.name + ' de ' + $scope.soundSelected.author);
 			console.log('index de litem son ' + my_player.id_song_played);
 
-			var page = 0;
-			if ((my_player.id_song_played + 1) <= 8)
-				page = 1;
-			else
-			{
-				var page = (my_player.id_song_played + 1) / 8;
-				var reste = (my_player.id_song_played + 1) % 8;
-				if (reste > 0)
-					page++;
-				page = Math.floor(page);
-			}
-			angular.element('div.holder').jPages(page);
+			// fait change le jpage si besoin //
+			funcFactory.findCurrentPaginationPage($scope.divholder);
 		}
   	});
 
@@ -100,6 +97,8 @@ playlistModule.controller('playlistController', function playlistController($tim
 				}
 			}
 		}
+		else
+			funcFactory.findCurrentPaginationPage($scope.divholder);
 	}
 
 	$scope.play_media = function(music, element, index) {

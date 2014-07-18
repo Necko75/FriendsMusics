@@ -1,7 +1,7 @@
 playlistModule.config(['$routeProvider',
   function($routeProvider) {
     $routeProvider.
-      when('/addSong', {
+      when('/add-song/:playlist', {
         templateUrl: '/addNewSongTemplateRequest',
         controller: 'addNewSong'
       }).
@@ -15,7 +15,7 @@ playlistModule.config(['$routeProvider',
       }).
       when('/search', {
         templateUrl : '/searchTemplateRequest',
-        contoller : "Search"
+        controller : "Search"
       }).
       otherwise({
         redirectTo: '/'

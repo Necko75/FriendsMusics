@@ -1,4 +1,4 @@
-playlistModule.controller('addNewSong', function addNewSong($scope, $location, playlistStorage, $rootScope, $compile) {
+playlistModule.controller('addNewSong', function addNewSong($routeParams, $scope, $location, playlistStorage, $rootScope, $compile) {
 
 	$scope.editingSong = null;
 	$scope.loader_black = '<div class = "section_loader_black"><span class = "loader_ loader_cercle_black"></span></div>';
