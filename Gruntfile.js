@@ -18,7 +18,7 @@ module.exports = function(grunt) {
           'public/javascripts/FriendsMusics/controllers/controller_song.js', 
           'public/javascripts/FriendsMusics/controllers/controller_FriendsList.js',
           'public/javascripts/FriendsMusics/controllers/controller_chatboxes.js',
-          'public/javascripts/FriendsMusics/controllers/contoller_ShareSong.js',
+          'public/javascripts/FriendsMusics/controllers/controller_ShareSong.js',
           'public/javascripts/FriendsMusics/controllers/controller_notifications.js',
           'public/javascripts/src/jpage.js',
           'public/javascripts/src/mediaelement.js',
