@@ -3,3 +3,27 @@ avec "w96GSHzpedA" = id de la vidéo youtube.
 
 Ex : rone - flesh, url : https://www.youtube.com/watch?v=w96GSHzpedA
 le fichier json récupéré va permettre d'obtenir le titre de la vidéo ... "title":"Rone - Flesh"
+
+
+
+ORDER LAYOUT SCRIPT JS LOADED :
+
+//
+    script(src="/javascripts/src/angular.js")
+    script(src="/javascripts/src/ui_bootstrap.js")
+    script(src="/socket.io/socket.io.js")
+    script(src="/javascripts/src/soundcloud_api.js")
+    script(src="/javascripts/src/angular_routes.js")
+    script(src="/javascripts/src/jpage.js")
+    script(src="/javascripts/FriendsMusics/controllers/controller.js")
+    script(src="/javascripts/FriendsMusics/controllers/controller_song.js")
+    script(src="/javascripts/FriendsMusics/controllers/controller_FriendsList.js")
+    script(src="/javascripts/FriendsMusics/controllers/controller_chatboxes.js")
+    script(src="/javascripts/FriendsMusics/controllers/controller_ShareSong.js")
+    script(src="/javascripts/FriendsMusics/controllers/controller_notifications.js")
+    script(src="/javascripts/FriendsMusics/routes.js")
+    script(src="/javascripts/FriendsMusics/services/factory.js")
+    script(src="/javascripts/FriendsMusics/services/func.js")
+    script(src="/javascripts/src/mediaelement.js")
+    script(src="/javascripts/FriendsMusics/player.js")
+  //
