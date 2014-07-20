@@ -1,6 +1,6 @@
 div(id="tracksListMusics" ng-controller="addNewSong")
 	div(class="track row two" ng-repeat="music in musics" my-post-repeat-directive)
-		div(class="choose_music" ng-model="soundSelected")
+		div(id='{{music.id}}' class="choose_music")
 			div(class="col-md-1")
 				span(ng-if="music.favorite == true" class="glyphicon glyphicon-heart" ng-click="removeFromFavorite(music, $index)" style="cursor:pointer;")
 				span(ng-if="music.favorite != true" class="glyphicon glyphicon-heart-empty" ng-click="addToFavorite(music, $event)" style="cursor:pointer;")

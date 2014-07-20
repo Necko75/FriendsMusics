@@ -15,7 +15,6 @@ playlistModule.controller('playlistController', function playlistController($tim
 	playlistStorage.setSocketUser($rootScope.socket);
 	$scope.divholder = angular.element('div.holder');
 	$scope.soundSelected = undefined;
-	$scope.paginator = undefined;
 
 	playlistStorage.getUserPlaylists().success(function(data) {
 		$scope.playlists = data;
@@ -34,15 +33,7 @@ playlistModule.controller('playlistController', function playlistController($tim
 	$scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent) {
 
 		console.log('ngreapeat');
-		if ($scope.divholder.size() > 0 && $scope.paginator !== undefined)
-			$scope.divholder.jPages("destroy");
-		$scope.divholder.jPages({
-			containerID : "tracksListMusics",
-			perPage : 8,
-			callback : function() {
-				$scope.paginator = this;
-			}
-		});
+		funcFactory.createPagination($scope.divholder);
 
 		$('#tracksListMusics').find('.track').each(function() {
 			if ($(this).index() % 2 > 0)
@@ -52,7 +43,7 @@ playlistModule.controller('playlistController', function playlistController($tim
 		// un son est peut être joué sur la playlist chargé //
 		// en effet il s'agit dela fonction directive d'après chargement de liste de sons, mais elle a pu être déclenchée depuis la selectbox des playlists //
 		if (my_player.id_song_played != undefined && ($scope.soundSelected.playlist_id == $scope.playlist_selected.id))
-			my_player.recreateAnimation();
+			my_player.recreateAnimation($scope.soundSelected);
 
 		// si un son est joué sur la playlist désormais sélectionné, bien replacer la pagination //
 		if ($scope.soundSelected != undefined && my_player.id_playlist_played != undefined && (my_player.id_playlist_played == $scope.playlist_selected.id))

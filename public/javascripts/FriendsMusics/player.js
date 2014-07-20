@@ -212,13 +212,22 @@ my_player = {
       this.cible_.find('span:first').removeClass(this.class_pause).addClass(this.class_play);
   },
 
-  recreateAnimation : function() {
+  recreateAnimation : function(soundSelected) {
+      var that = this;
 
-      console.log(this.id_song_played);
-      this.cible_ = $('.choose_music').eq(this.id_song_played).addClass("playing");
-      console.log(this.cible_);
-      this.cible_.addClass("playing");
-      this.play_animation();
+      setTimeout(function() {
+          if (soundSelected != undefined)
+          {
+            $('#tracksListMusics').find('.track').each(function() {
+                if ($(this).find('.choose_music').attr('id') == soundSelected.id)
+                {
+                    $(this).addClass('playing');
+                    that.cible_ = $(this);
+                    that.play_animation();
+                }
+            });
+          }
+      }, 0);
   },
 
   checkIfChangePage : function(index_) {
