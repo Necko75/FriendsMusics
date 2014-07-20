@@ -38,42 +38,38 @@ my_player = {
       });
   },
 
-  play_video : function(url, type, target, index, id_current_playlist)
+  play_video : function(musicClick, soundSelected, target)
   {
       var that = this;
 
-      console.log('index de la musique : ' + index);
-      console.log('id de la playlist : ' + id_current_playlist);
-      console.log('id de la playlist du dernier son joué : ' + this.id_playlist_played);
-
-      if (index === this.id_song_played && this.cible_ != undefined && ((id_current_playlist == this.id_playlist_played) || this.id_playlist_played == undefined))
+      if (soundSelected === undefined || (musicClick.id !== soundSelected.id))
       {
-          this.removeAllAnimations();
-          if (this.cible_.hasClass("playing"))
-             this.pauseMedia();
-          else if (this.cible_.hasClass("pausing"))
-              this.playMedia();
+          if (this.cible_ !== undefined)
+          {
+              this.cible_.removeClass('playing');
+              this.removeAllAnimations();
+          }
+          this.stopSoundcloudPlayer();
+          this.cible_ = target.parents('.track');
+          this.beforeCreateMedia(musicClick.url, musicClick.type_source_id);
+          this.createMedia();
+          setTimeout(function() {
+            that.autoplay_youtube_video();
+          }, 2000);
+          this.cible_.find('.span_reading').addClass(this.class_pause);
       }
       else
       {
-        if (this.cible_ != undefined)
-        {
-            this.removeAllAnimations();
-            this.cible_.removeClass('playing');
-        }
-        if (this.widget_soundcloud != undefined)
-        {
-            $('#sc-widget').hide();
-            this.widget_soundcloud.pause();
-        }
-        this.cible_ = target.parents('.track');
-        this.beforeCreateMedia(url, type);
-        this.createMedia();
-        setTimeout(function() {
-          that.autoplay_youtube_video();
-        }, 2000);
-        this.id_song_played = index;
-        this.cible_.find('.span_reading').addClass(this.class_pause);
+          this.removeAllAnimations();
+          $('#tracksListMusics').find('.track').each(function() {
+              if ($(this).find('.choose_music').attr('id') == musicClick.id)
+              {
+                  if (that.cible_.hasClass("playing"))
+                      that.pauseMedia();
+                  else if (that.cible_.hasClass("pausing"))
+                      that.playMedia();
+              }
+          });
       }
   },
 
@@ -212,7 +208,7 @@ my_player = {
   removeAllAnimations : function() {
 
       $('.play_sound_animation, .pause_sound_animation').remove();
-      this.cible_.find('span:first').removeClass(this.class_pause).addClass(this.class_play);
+      this.cible_.find('.choose_music').find('.span_reading').removeClass(this.class_pause).addClass(this.class_play);
   },
 
   recreateAnimation : function(soundSelected) {
@@ -231,6 +227,13 @@ my_player = {
             });
           }
       }, 0);
+  },
+
+  stopSoundcloudPlayer : function() {
+      var that = this;
+
+      $('#sc-widget').hide();
+      this.widget_soundcloud.pause();
   },
 
   checkIfChangePage : function(index_) {

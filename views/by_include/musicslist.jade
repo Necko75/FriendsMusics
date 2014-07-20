@@ -11,7 +11,7 @@ div(id="tracksListMusics" ng-controller="addNewSong")
 				span(class="" style="color:grey;")
 					{{$index}} &nbsp;
 				input(type="text" ng-model="music.name" autocomplete="off" class="inputEditSong ng-pristine ng-valid" ng-show="music == editingSong")
-				a(class="musicChosen" ng-click="play_media(music, $event, $index)" ng-show="!(music == editingSong)")
+				a(style="cursor:pointer;" class="musicChosen" ng-click="play_media(music, $event, $index)" ng-show="!(music == editingSong)")
 					span(class="song_title")
 						{{music.name}}
 
@@ -21,7 +21,7 @@ div(id="tracksListMusics" ng-controller="addNewSong")
 					{{music.author}}
 
 			div(class="col-md-3" style="text-align:right;")
-				a(href="#" class="edit_song")
+				a(class="edit_song" style="cursor:pointer;")
 					span(class="glyphicon glyphicon-ok" style="margin-top:8px; margin-right:14px;" ng-if="music == editingSong" ng-click="submitEditSong(music)")
 					span(class="glyphicon glyphicon-edit" style="margin-top:8px;" ng-if="!(music == editingSong)" ng-click="editSong(music)") &nbsp;
 

@@ -42,7 +42,8 @@ playlistModule.controller('playlistController', function playlistController($tim
 
 		// un son est peut être joué sur la playlist chargé //
 		// en effet il s'agit dela fonction directive d'après chargement de liste de sons, mais elle a pu être déclenchée depuis la selectbox des playlists //
-		if (my_player.id_song_played != undefined &&  ($scope.playlist_selected == "favorites" || ($scope.soundSelected.playlist_id == $scope.playlist_selected.id)))
+		//if ($scope.playlist_selected == "favorites" || ($scope.soundSelected.playlist_id == $scope.playlist_selected.id))
+		if ($scope.soundSelected !== undefined)
 			my_player.recreateAnimation($scope.soundSelected);
 
 		// si un son est joué sur la playlist désormais sélectionné, bien replacer la pagination //
@@ -74,12 +75,8 @@ playlistModule.controller('playlistController', function playlistController($tim
 	// doit rediriger l'utilisateur vers la bonne playlist et sur la bonne page ou est joué le son
 	$scope.targetSong = function(soundselected) {
 
-		console.log(soundselected);
-		console.log(my_player.id_playlist_played);
-		console.log(my_player.id_song_played + 1);
-
 		if ($scope.playlist_selected.id == $scope.soundSelected.playlist_id)
-			funcFactory.findCurrentPaginationPage($scope.divholder);
+			funcFactory.findCurrentPaginationPage($scope.divholder, funcFactory.getIndexOfSongSelected($scope.soundSelected));
 		else
 		{
 			for (var i = 0; i < $scope.playlists.length; i++)
@@ -98,7 +95,11 @@ playlistModule.controller('playlistController', function playlistController($tim
 		if ($scope.musics[index]['type_source_id'] == 2) // soundcloud //
 	        my_player.play_soundcloud($scope.musics[index]['url'], $(element.currentTarget), index, $scope.playlist_selected.id);
 	    else // youtube //
-	        my_player.play_video($scope.musics[index]['url'], $scope.musics[index]['type_source_id'], $(element.currentTarget), index, $scope.playlist_selected.id);
+	    {
+	    	//my_player.play_video($scope.musics[index]['url'], $scope.musics[index]['type_source_id'], $(element.currentTarget), index, $scope.playlist_selected.id);
+	    	my_player.play_video(music, $scope.soundSelected, $(element.currentTarget));
+	    }
+	        
 	    my_player.id_playlist_played = $scope.playlist_selected.id;
 	    $scope.soundSelected = music;
 	}
