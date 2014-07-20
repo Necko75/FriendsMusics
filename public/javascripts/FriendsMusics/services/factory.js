@@ -1,16 +1,17 @@
 angular.module('playlistModule').factory('playlistStorage', function ($http) {
 	
 	var friendsList = [];
-	var socket;
 
 	return {
 
+		socket : undefined,
+
 		setSocketUser : function(socket) {
-			socket = socket;
+			this.socket = socket;
 		},
 
 		getSocket : function() {
-			return (socket);
+			return (this.socket);
 		},
 
 		setFriendsList : function(list) {

@@ -1,291 +1,3 @@
-/******* 
-PLAYER FUNCTIONS CLASSE
-********/
-
-/*
-
-my_player = {
-
-	media_ : undefined,
-	indice_id : 0,
-	type_ : undefined,
-	cible : undefined,
-  index_cible : undefined, // index de la musique selectionnée dans le DOM //
-  id_playlist : undefined,
-  id_playlist_played : undefined,
-	class_play : "glyphicon-play",
-  class_pause : "glyphicon-pause",
-  song_selected : undefined,
-  is_playing : false,
-  widget_soundcloud : undefined,
-  has_changed_playlist : false,
-  play_sound_animation : $('<section class = "play_sound_animation"><span></span><span></span><span></span></section>'),
-  pause_sound_animation : $('<section class = "pause_sound_animation"><span>.</span><span>.</span><span>.</span></section>'),
-
-	init : function() {
-		var that = this;
-
-    if (this.id_playlist == undefined || this.id_playlist == "")
-      this.id_playlist = $('input[name="real_id_playlist"]').val();
-
-    if (that.has_changed_playlist === false)
-    {
-      var iframeElement   = document.querySelector('iframe');
-      var iframeElementID = iframeElement.id;
-      this.widget_soundcloud = SC.Widget(iframeElement);
-      this.initMediaPlayer('audio');
-    }
-    else
-    {
-      // on réaffiche l'animation css3 pour la musique sélectionnée préalablement si il y eu //
-      if (that.cible != undefined)
-        that.enable_animation_on_song_played_before();
-    }
-	},
-
-  add_animation_current_playing : function() {
-    var that = this;
-
-    that.cible.find('.pause_sound_animation').remove();
-    that.cible.append(that.play_sound_animation);
-    that.cible.find('span:first').removeClass('pause').addClass('playing').removeClass(that.class_play).addClass(that.class_pause);
-  },
-
-  add_animation_current_pausing : function() {
-    var that = this;
-
-    that.cible.find('span:first').removeClass('playing').addClass('pause').removeClass(that.class_pause).addClass(that.class_play);
-    that.cible.find('.play_sound_animation').remove();
-    that.cible.append(that.pause_sound_animation);
-  },
-
-  enable_animation_on_song_played_before : function() {
-    var that = this;
-
-    console.log("index cible : " + that.index_cible);
-    console.log("id_playlist played : " + that.id_playlist_played);
-    console.log("actuel id playlist : " + that.id_playlist);
-
-    if (that.id_playlist == that.id_playlist_played)
-    {
-      that.cible = $('.choose_music').eq(that.index_cible);
-      that.add_animation_current_playing();
-    }
-  },
-
-  play_soundcloud : function(url, target, index_) {
-
-    var that = this;
-
-    if (index_ === that.index_cible)
-    {
-      if (that.is_playing === true)
-      {
-        that.widget_soundcloud.pause();
-        that.is_playing = false;
-        that.add_animation_current_pausing();
-      }
-      else
-      {
-        that.widget_soundcloud.play();
-        that.is_playing = true;
-        that.add_animation_current_playing();
-      }
-      return (false);
-    }
-
-    if (that.indice_id !== 0)
-      $('#mep_' + this.indice_id).remove();
-
-    that.widget_soundcloud.bind(SC.Widget.Events.READY, function() {
-      $('#sc-widget').show();
-      that.widget_soundcloud.load(url, {
-        show_artwork: true,
-        auto_play : true,
-      });
-    });
-
-    if (that.cible !== undefined)
-    {
-      that.cible.find('.play_sound_animation').remove();
-      that.cible.find('span:first').removeClass(that.class_pause).addClass(that.class_play);
-      that.cible.removeClass('playing').removeClass('pause');
-    }
-
-    that.cible = target;
-    that.index_cible = index_;
-    that.is_playing = true;
-    that.cible.find('span:first').removeClass('pause').addClass('playing').removeClass(that.class_play).addClass(that.class_pause);
-    that.cible.append(that.play_sound_animation);
-
-    // on branche l'evenement finish du son chargé //
-    that.widget_soundcloud.bind(SC.Widget.Events.FINISH, function() {
-      that.cible.removeClass('border-selected');
-      that.cible.find('span:first').removeClass(that.class_pause).addClass(that.class_play).removeClass('playing');
-      var new_cible_parent = that.cible.parents('.track').next();
-      that.cible = new_cible_parent.find('.choose_music');
-      that.checkIfChangePage(index_);
-      that.cible.trigger('click');
-    });
-
-  },
-
-  checkIfChangePage : function(index_) {
-
-    var last_index = parseInt($('.jp-current').text()) * 4;
-    if (index_ == last_index)
-    {
-      var $currentPage = Math.ceil(index_ / 5);
-      $("div.holder").jPages($currentPage + 1);
-    }
-  },
-
-  play_video : function(url, type, target, index_) {
-
-      console.log('ici');
-      var that = this;
-
-      if ((index_ == that.index_cible) && (that.id_playlist == that.id_playlist_played))
-      {
-        console.log('iic');
-        // même item selectionné, on doit savoir si on met pause ou lecture //
-        // si playing, mettre pause, sinon on play //
-        if (that.is_playing === true)
-        {
-          // on met pause //
-          that.pause();
-        }
-        else
-        {
-          // on met play //
-          that.play();
-        }
-        // on return false pour ne pas aller plus loin //
-        return false;
-      }
-
-      if (that.widget_soundcloud != undefined)
-      {
-        $('#sc-widget').hide();
-        that.widget_soundcloud.pause();
-      }
-
-      that.type_ = "youtube_player";
-      //that.build_player_video();
-      $('#player_video').find('source').attr('src', url);
-      this.initMediaPlayer('video', index_);
-      $('#mep_0').hide();
-
-      setTimeout(function() {
-        that.autoplay_youtube_video(that);
-      }, 1650);
-
-      if (that.cible !== undefined)
-      {
-        that.cible.find('.play_sound_animation').remove();
-        that.cible.find('span:first').removeClass(that.class_pause).addClass(that.class_play);
-        that.cible.removeClass('playing').removeClass('pause');
-      }
-      that.cible = target;
-      that.index_cible = index_;
-      that.is_playing = true;
-      that.cible.find('span:first').removeClass('pause').addClass('playing').removeClass(that.class_play).addClass(that.class_pause);
-      that.cible.append(that.play_sound_animation);
-    },
-    
-   pause : function() {
-      var that = this;
-
-      that.media_.pause();
-      that.is_playing = false;
-      that.add_animation_current_pausing();
-   },
-
-   play : function() {
-      var that = this;
-
-      that.media_.play();
-      that.is_playing = true;
-      that.add_animation_current_playing();
-   },
-
-	 initMediaPlayer : function(type_, index_) {
-      var that = this;
-
-      console.log('rentre');
-      console.log(type_);
-      return (false);
-      var $div = $('#player_audio');
-      if (type_ == "video")
-        $div = $('#player_video');
-
-      $div = "#player_video";
-      that.media_ = new MediaElementPlayer($div, {
-        features : ['playpause','loop','current','progress','duration','volume'],
-		  success : function(mediaElement, domObject) {
-
-        console.log('création média');
-        /*
-        mediaElement.addEventListener('ended', function() {
-
-            console.log('fin du media');
-            if ($('#mep_' + that.indice_id).find('.mejs-controls').find('.mejs-loop-button').hasClass('mejs-loop-off'))
-            {
-              // on charge le prochain son //
-              that.cible.removeClass('border-selected');
-              that.cible.find('span:first').removeClass(that.class_pause).addClass(that.class_play).removeClass('playing');
-              var new_cible_parent = that.cible.parents('.track').next();
-              that.cible = new_cible_parent.find('.choose_music');
-              that.cible.trigger('click');
-              that.checkIfChangePage(index_);
-            }
-          });
-        }
-      });
-    },
-
-    build_player_video : function() {
-      var that = this;
-
-      if (this.indice_id > 0 && $('#mep_' + this.indice_id).size() > 0)
-        $('#mep_' + this.indice_id).remove();
-      var type = "";
-      if (that.type_ == "dailymotion_player")
-        type = "video/dailymotion";
-      else if (that.type_ == "youtube_player")
-        type = "video/youtube";
-      $('#mep_0').after('<video width="770" height="400" id="player_video"><source type="'+type+'" src="#" /></video>');
-      this.indice_id++;
-    },
-
-    autoplay_youtube_video : function(obj) {
-
-      $('.mejs-overlay-button').trigger('click');
-
-      // on test si la musique s'est bien chargé et avance //
-      setTimeout(function() {
-        obj.checkIfPlaying(obj);
-      }, 3200);
-    },
-
-    checkIfPlaying : function(obj) {
-
-      if (obj.media_.media.duration <= 0 && obj.media_.media.currentTime <= 0)
-      {
-        obj.cible.removeClass('border-selected');
-        obj.cible.find('span:first').removeClass(obj.class_pause).addClass(obj.class_play).removeClass('playing');
-        var new_cible_parent = obj.cible.parents('.track').next();
-        obj.cible = new_cible_parent.find('.choose_music');
-        obj.cible.trigger('click');
-      }
-    },
-}
-*/
-
-/********
-END PLAYER FUNCTIONS
-********/
-
 my_player = {
 
   media_ : undefined,
@@ -351,14 +63,13 @@ my_player = {
             $('#sc-widget').hide();
             this.widget_soundcloud.pause();
         }
-        this.cible_ = target.parents('.row');
+        this.cible_ = target.parents('.track');
         this.beforeCreateMedia(url, type);
         this.createMedia();
         setTimeout(function() {
           that.autoplay_youtube_video();
         }, 2000);
         this.id_song_played = index;
-        console.log(this.cible_.html());
         this.cible_.find('.span_reading').addClass(this.class_pause);
       }
   },
@@ -393,8 +104,16 @@ my_player = {
           // on branche l'evenement finish du son chargé //
           that.widget_soundcloud.bind(SC.Widget.Events.FINISH, function() {
             that.cible_.find('.span_reading').removeClass(that.class_pause).addClass(that.class_play).removeClass('playing');
-            that.cible_ = that.cible_.next();
-            that.checkIfChangePage(index);
+            
+            if (that.cible_.hasClass('choose_music'))
+            {
+               var parent = that.cible_.parents('.track');
+               that.cible_ = parent.next();
+            }
+            else
+              that.cible_ = that.cible_.next();
+
+            //that.checkIfChangePage(index); NE MARCHE PAS
             that.cible_.find('.musicChosen').trigger('click');
           });
       }
@@ -428,20 +147,22 @@ my_player = {
                   that.first_time = false;
               else
                   that.indice_lecteur++;
-              mediaElement.addEventListener('ended', function() {                  
+              mediaElement.addEventListener('ended', function() {
                     
-                  // si l'utilisateur n'est pas sur sa playlist ou est joué l'actuel musique, alors il faut le rediriger vers elle //
-                  $('#link_sound_selected').trigger('click');
-                  setTimeout(function() {
                     // on charge le prochain son //
                     console.log('chargement du son suivant ..');
                     that.cible_.find('.span_reading').removeClass(that.class_pause).addClass(that.class_play).removeClass('playing');
                     console.log(that.cible_);
-                    that.cible_ = that.cible_.next();
+                    if (that.cible_.hasClass('choose_music'))
+                    {
+                       var parent = that.cible_.parents('.track');
+                       that.cible_ = parent.next();
+                    }
+                    else
+                      that.cible_ = that.cible_.next();
                     console.log(that.cible_);
                     that.cible_.find('.musicChosen').trigger('click');
-                    that.checkIfChangePage(that.id_song_played);
-                  },500);
+                    //that.checkIfChangePage(that.id_song_played); NE MARCHE PAS
               });
           }
       });

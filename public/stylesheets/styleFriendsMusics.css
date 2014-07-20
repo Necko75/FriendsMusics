@@ -559,3 +559,22 @@ footer {
 
 	font-weight: bold;
 }
+
+/* controller search song */
+
+#search_song {
+	;
+}
+
+#search_song .search_song {
+	background: #fff url(/images/loupe.gif) 175px 50% no-repeat;
+	border: 1px solid #CFCFCF;
+	width: 200px;
+	height: 35px;
+	border-radius: 2px;
+	margin: 0 auto;
+	padding: 0 25px 0 5px;
+	color: #999;
+	font-size: 12px;
+	font-weight: bold;
+}

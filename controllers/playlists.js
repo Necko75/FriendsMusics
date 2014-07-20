@@ -6,7 +6,7 @@ var Notifications = require('models/notifications/notifications_class.js');
 
 module.exports.controller = function(app) {
 
-	app.get('/playlists', function(req, res) {
+	app.get('/playlists', function (req, res) {
 		Notifications.getSharedSongNotifications(req.session, function(total_notifs) {
 			u.getFriendsList(req.session, false, function(retour) {
 				console.log(retour);
@@ -16,15 +16,19 @@ module.exports.controller = function(app) {
 		});
 	});
 
-	app.post('/getMusicsFromPlaylist', function(req, res) {
+	app.post('/getMusicsFromPlaylist', function (req, res) {
 		PlayList.getMusicsFromPlaylist(req.body.playlist_id, req.session, function(list) {
 			res.json(list);
 		});
 	});
 
-	app.get('/getUserPlaylists', function(req, res) {
+	app.get('/getUserPlaylists', function (req, res) {
 		PlayList.getUserPlaylists(req.session, function(list) {
 			res.json(list);
 		});
+	});
+
+	app.get('/searchTemplateRequest', function (req, res) {
+		res.render('by_ajax/searchTemplateRequest', {});
 	});
 }

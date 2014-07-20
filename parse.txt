@@ -21,6 +21,7 @@ ORDER LAYOUT SCRIPT JS LOADED :
     script(src="/javascripts/FriendsMusics/controllers/controller_chatboxes.js")
     script(src="/javascripts/FriendsMusics/controllers/controller_ShareSong.js")
     script(src="/javascripts/FriendsMusics/controllers/controller_notifications.js")
+    script(src="/javascripts/FriendsMusics/controllers/controller_search.js")
     script(src="/javascripts/FriendsMusics/routes.js")
     script(src="/javascripts/FriendsMusics/services/factory.js")
     script(src="/javascripts/FriendsMusics/services/func.js")

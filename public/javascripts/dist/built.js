@@ -1775,6 +1775,9 @@ playlistModule.controller('Notifications', function Notifications($scope, $locat
 		});
 	}
 });
+playlistModule.controller('Search', function Search($scope, $location, playlistStorage, $compile, $rootScope, $routeParams) {
+	
+});
 /**
  * jQuery jPages v0.7
  * Client side pagination with jQuery

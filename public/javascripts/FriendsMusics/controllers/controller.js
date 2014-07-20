@@ -12,6 +12,7 @@ playlistModule.controller('playlistController', function playlistController($tim
 	$scope.playlist_selected = undefined;
 	$scope.cache = $cacheFactory('cacheId');
 	$rootScope.socket = io.connect('http://localhost:3000');
+	playlistStorage.setSocketUser($rootScope.socket);
 	$scope.divholder = angular.element('div.holder');
 	$scope.soundSelected = undefined;
 	$scope.paginator = undefined;
@@ -50,7 +51,7 @@ playlistModule.controller('playlistController', function playlistController($tim
 
 		// un son est peut être joué sur la playlist chargé //
 		// en effet il s'agit dela fonction directive d'après chargement de liste de sons, mais elle a pu être déclenchée depuis la selectbox des playlists //
-		if (my_player.id_playlist_played != undefined && my_player.id_song_played != undefined && (my_player.id_playlist_played == $scope.playlist_selected.id))
+		if (my_player.id_song_played != undefined && ($scope.soundSelected.playlist_id == $scope.playlist_selected.id))
 			my_player.recreateAnimation();
 
 		// si un son est joué sur la playlist désormais sélectionné, bien replacer la pagination //
@@ -79,26 +80,26 @@ playlistModule.controller('playlistController', function playlistController($tim
 	}
 
 	// lorsque l'utilisateur clique sur le lien de la chanson (juste en dessous du lecteur média)
+	// doit rediriger l'utilisateur vers la bonne playlist et sur la bonne page ou est joué le son
 	$scope.targetSong = function(soundselected) {
 
 		console.log(soundselected);
 		console.log(my_player.id_playlist_played);
 		console.log(my_player.id_song_played + 1);
-		var index = my_player.id_song_played + 1;
-		
-		if ($scope.playlist_selected.id != my_player.id_playlist_played)
+
+		if ($scope.playlist_selected.id == $scope.soundSelected.playlist_id)
+			funcFactory.findCurrentPaginationPage($scope.divholder);
+		else
 		{
 			for (var i = 0; i < $scope.playlists.length; i++)
 			{
-				if ($scope.playlists[i].id == my_player.id_playlist_played)
+				if ($scope.playlists[i].id == $scope.soundSelected.playlist_id)
 				{
 					$scope.playlist_selected = $scope.playlists[i];
 					$scope.change_playlist();
 				}
 			}
 		}
-		else
-			funcFactory.findCurrentPaginationPage($scope.divholder);
 	}
 
 	$scope.play_media = function(music, element, index) {
