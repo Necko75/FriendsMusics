@@ -1,0 +1,6 @@
+div(id="search_song" ng-controller="Search" style="margin-top:10px; width:815px;")
+	div(class="alert alert-info")
+		| By artist or by title
+		b 
+			|  on {{playlist_selected.name}}
+	input(type="text" class="search_song" placeholder="Artist or song title" ng-model="search_song")
