@@ -42,7 +42,7 @@ playlistModule.controller('playlistController', function playlistController($tim
 
 		// un son est peut être joué sur la playlist chargé //
 		// en effet il s'agit dela fonction directive d'après chargement de liste de sons, mais elle a pu être déclenchée depuis la selectbox des playlists //
-		if (my_player.id_song_played != undefined && ($scope.soundSelected.playlist_id == $scope.playlist_selected.id))
+		if (my_player.id_song_played != undefined &&  ($scope.playlist_selected == "favorites" || ($scope.soundSelected.playlist_id == $scope.playlist_selected.id)))
 			my_player.recreateAnimation($scope.soundSelected);
 
 		// si un son est joué sur la playlist désormais sélectionné, bien replacer la pagination //

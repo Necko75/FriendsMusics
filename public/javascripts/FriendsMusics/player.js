@@ -57,7 +57,10 @@ my_player = {
       else
       {
         if (this.cible_ != undefined)
+        {
             this.removeAllAnimations();
+            this.cible_.removeClass('playing');
+        }
         if (this.widget_soundcloud != undefined)
         {
             $('#sc-widget').hide();
