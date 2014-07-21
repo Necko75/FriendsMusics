@@ -489,6 +489,17 @@
 	float: left;
 }
 
+#pagination_holder {
+	float : left;
+}
+
+#block_add_playlist {
+	float : right;
+	margin-right: 150px;
+	margin-top : 5px;
+}
+
+
 /*
 FOOTER
 */
