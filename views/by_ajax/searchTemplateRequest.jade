@@ -4,3 +4,5 @@ div(id="search_song" ng-controller="Search" style="margin-top:10px; width:815px;
 		b 
 			|  on {{playlist_selected.name}}
 	input(type="text" class="search_song" placeholder="Artist or song title" ng-model="search_song")
+	a(class="btn btn-default actionWithUser" style="margin-left:5px;" ng-click="cancelResearch()")
+		span(title="" class="glyphicon glyphicon-remove")

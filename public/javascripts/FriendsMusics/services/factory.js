@@ -67,6 +67,10 @@ angular.module('playlistModule').factory('playlistStorage', function ($http) {
 
 		removeFromFavorite : function(id_song) {
 			return ($http.post('/removeFromFavorite', {"id_song" : id_song}));	
-		}
+		},
+
+		submitResearchSong : function (pattern, id_playlist) {
+			return ($http.post('/submitResearchSong', {"id_playlist" : id_playlist, "pattern" : pattern.toLowerCase()}));
+		},
 	};
 });

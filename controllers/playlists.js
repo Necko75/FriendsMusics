@@ -31,4 +31,13 @@ module.exports.controller = function(app) {
 	app.get('/searchTemplateRequest', function (req, res) {
 		res.render('by_ajax/searchTemplateRequest', {});
 	});
+
+	app.post('/submitResearchSong', function (req, res) {
+		console.log('research on playlist ID : ' + req.body.id_playlist);
+		console.log('with pattern : ' + req.body.pattern);
+
+		PlayList.findPatternIn(req.session, req.body, function (retour) {
+			res.json(retour);
+		});
+	});
 }
