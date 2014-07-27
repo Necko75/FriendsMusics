@@ -1,4 +1,4 @@
-playlistModule.controller('addNewSong', function addNewSong($routeParams, $scope, $location, playlistStorage, $rootScope, $compile) {
+playlistModule.controller('addNewSong', function addNewSong($modal, $routeParams, $scope, $location, playlistStorage, $rootScope, $compile, $timeout) {
 
 	$scope.editingSong = null;
 	$scope.loader_black = '<div class = "section_loader_black"><span class = "loader_ loader_cercle_black"></span></div>';
@@ -13,26 +13,23 @@ playlistModule.controller('addNewSong', function addNewSong($routeParams, $scope
 	});
 	
 	$scope.submit_add_song = function(song) {
-		
+			
 		song.playlist_id = $scope.playlist_selected.id;
 		if (song.artist != "" && song.name != '' && song.url != '')
 		{
 			playlistStorage.submitNewSong(song).success(function(back) {
-				if (back.erreur == "ok")
-				{
-					$("#myModal").find('.modal-title').text("Song added to playlist !");
-					if ($('#myModal').find('.delete_song').size() > 0)
-						$('.delete_song').remove();
-					$("#myModal").modal('show');
-					setTimeout(function() {
-						$("#myModal").modal('hide');
-					}, 2000);
 
+				var m = $modal.open({
+					templateUrl : '/modalConfirmAddNewSong',
+					size: 'sm',
+				});
+				$timeout(function () {
+					m.close();
 					playlistStorage.getMusicsFromPlaylist($scope.playlist_selected.id).success(function(data) {
 						$rootScope.musics = data;
 					});
-					$scope.close(); // on close le formulaire //
-				}
+				}, 1500);
+				$scope.close();
 			});
 		}
 		return (false);
