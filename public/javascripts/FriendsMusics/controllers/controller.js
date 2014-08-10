@@ -84,7 +84,7 @@ playlistModule.controller('playlistController', function playlistController($tim
 				if ($scope.playlists[i].id == $scope.soundSelected.playlist_id)
 				{
 					$scope.playlist_selected = $scope.playlists[i];
-					$scope.change_playlist();
+					$scope.change_playlist($scope.playlist_selected);
 				}
 			}
 		}
@@ -104,14 +104,16 @@ playlistModule.controller('playlistController', function playlistController($tim
 	    $scope.soundSelected = music;
 	}
 
-	$scope.change_playlist = function() {
+	$scope.change_playlist = function(playlist) {
 
+		$scope.playlist_selected = playlist;
 		playlistStorage.getMusicsFromPlaylist($scope.playlist_selected.id).success(function(data) {
 			$rootScope.musics = data;
 			my_player.id_playlist_selected = $scope.playlist_selected.id;
 			$scope.cache.remove('favoritesLoaded');
 		});
 	}
+
 
 	$scope.getThreadListMessages = function($event) {
 

@@ -1152,9 +1152,9 @@ playlistModule.controller('playlistController', function playlistController($tim
 	$scope.playlist_selected = undefined;
 	$scope.cache = $cacheFactory('cacheId');
 	$rootScope.socket = io.connect('http://localhost:3000');
+	playlistStorage.setSocketUser($rootScope.socket);
 	$scope.divholder = angular.element('div.holder');
 	$scope.soundSelected = undefined;
-	$scope.paginator = undefined;
 
 	playlistStorage.getUserPlaylists().success(function(data) {
 		$scope.playlists = data;
@@ -1173,15 +1173,7 @@ playlistModule.controller('playlistController', function playlistController($tim
 	$scope.$on('ngRepeatFinished', function(ngRepeatFinishedEvent) {
 
 		console.log('ngreapeat');
-		if ($scope.divholder.size() > 0 && $scope.paginator !== undefined)
-			$scope.divholder.jPages("destroy");
-		$scope.divholder.jPages({
-			containerID : "tracksListMusics",
-			perPage : 8,
-			callback : function() {
-				$scope.paginator = this;
-			}
-		});
+		funcFactory.createPagination($scope.divholder);
 
 		$('#tracksListMusics').find('.track').each(function() {
 			if ($(this).index() % 2 > 0)
@@ -1190,8 +1182,9 @@ playlistModule.controller('playlistController', function playlistController($tim
 
 		// un son est peut être joué sur la playlist chargé //
 		// en effet il s'agit dela fonction directive d'après chargement de liste de sons, mais elle a pu être déclenchée depuis la selectbox des playlists //
-		if (my_player.id_playlist_played != undefined && my_player.id_song_played != undefined && (my_player.id_playlist_played == $scope.playlist_selected.id))
-			my_player.recreateAnimation();
+		//if ($scope.playlist_selected == "favorites" || ($scope.soundSelected.playlist_id == $scope.playlist_selected.id))
+		if ($scope.soundSelected !== undefined)
+			my_player.recreateAnimation($scope.soundSelected);
 
 		// si un son est joué sur la playlist désormais sélectionné, bien replacer la pagination //
 		if ($scope.soundSelected != undefined && my_player.id_playlist_played != undefined && (my_player.id_playlist_played == $scope.playlist_selected.id))
@@ -1219,26 +1212,22 @@ playlistModule.controller('playlistController', function playlistController($tim
 	}
 
 	// lorsque l'utilisateur clique sur le lien de la chanson (juste en dessous du lecteur média)
+	// doit rediriger l'utilisateur vers la bonne playlist et sur la bonne page ou est joué le son
 	$scope.targetSong = function(soundselected) {
 
-		console.log(soundselected);
-		console.log(my_player.id_playlist_played);
-		console.log(my_player.id_song_played + 1);
-		var index = my_player.id_song_played + 1;
-		
-		if ($scope.playlist_selected.id != my_player.id_playlist_played)
+		if ($scope.playlist_selected.id == $scope.soundSelected.playlist_id)
+			funcFactory.findCurrentPaginationPage($scope.divholder, funcFactory.getIndexOfSongSelected($scope.soundSelected));
+		else
 		{
 			for (var i = 0; i < $scope.playlists.length; i++)
 			{
-				if ($scope.playlists[i].id == my_player.id_playlist_played)
+				if ($scope.playlists[i].id == $scope.soundSelected.playlist_id)
 				{
 					$scope.playlist_selected = $scope.playlists[i];
 					$scope.change_playlist();
 				}
 			}
 		}
-		else
-			funcFactory.findCurrentPaginationPage($scope.divholder);
 	}
 
 	$scope.play_media = function(music, element, index) {
@@ -1246,7 +1235,11 @@ playlistModule.controller('playlistController', function playlistController($tim
 		if ($scope.musics[index]['type_source_id'] == 2) // soundcloud //
 	        my_player.play_soundcloud($scope.musics[index]['url'], $(element.currentTarget), index, $scope.playlist_selected.id);
 	    else // youtube //
-	        my_player.play_video($scope.musics[index]['url'], $scope.musics[index]['type_source_id'], $(element.currentTarget), index, $scope.playlist_selected.id);
+	    {
+	    	//my_player.play_video($scope.musics[index]['url'], $scope.musics[index]['type_source_id'], $(element.currentTarget), index, $scope.playlist_selected.id);
+	    	my_player.play_video(music, $scope.soundSelected, $(element.currentTarget));
+	    }
+	        
 	    my_player.id_playlist_played = $scope.playlist_selected.id;
 	    $scope.soundSelected = music;
 	}
@@ -1290,16 +1283,17 @@ playlistModule.controller('playlistController', function playlistController($tim
 angular.module('playlistModule').factory('playlistStorage', function ($http) {
 	
 	var friendsList = [];
-	var socket;
 
 	return {
 
+		socket : undefined,
+
 		setSocketUser : function(socket) {
-			socket = socket;
+			this.socket = socket;
 		},
 
 		getSocket : function() {
-			return (socket);
+			return (this.socket);
 		},
 
 		setFriendsList : function(list) {
@@ -1355,26 +1349,54 @@ angular.module('playlistModule').factory('playlistStorage', function ($http) {
 
 		removeFromFavorite : function(id_song) {
 			return ($http.post('/removeFromFavorite', {"id_song" : id_song}));	
-		}
+		},
+
+		submitResearchSong : function (pattern, id_playlist) {
+			return ($http.post('/submitResearchSong', {"id_playlist" : id_playlist, "pattern" : pattern.toLowerCase()}));
+		},
 	};
 });
-angular.module('playlistModule').factory('funcFactory', function ($http) {
+angular.module('playlistModule').factory('funcFactory', function ($http, $rootScope) {
 
 	return {
-			findCurrentPaginationPage : function(divholder) {
+
+			paginator : undefined,
+
+			findCurrentPaginationPage : function(divholder, index_) {
 				var page = 0;
-				if ((my_player.id_song_played + 1) <= 8)
+				if ((index_ + 1) <= 8)
 					page = 1;
 				else
 				{
-					var page = (my_player.id_song_played + 1) / 8;
-					var reste = (my_player.id_song_played + 1) % 8;
+					var page = (index_ + 1) / 8;
+					var reste = (index_ + 1) % 8;
 					if (reste > 0)
 						page++;
 					page = Math.floor(page);
 				}
 				divholder.jPages(page);
 				return (true);
+			},
+
+			createPagination : function (divholder) {
+				var that = this;
+
+				if (divholder.size() > 0 && this.paginator !== undefined)
+					divholder.jPages("destroy");
+				divholder.jPages({
+					containerID : "tracksListMusics",
+					perPage : 8,
+					callback : function() {
+						that.paginator = this;
+					}
+				});
+			},
+
+			getIndexOfSongSelected : function(soundSelected) {
+
+				for (var i = 0; i < $rootScope.musics.length; i++)
+					if (soundSelected.id === $rootScope.musics[i].id)
+						return (i);
 			}
 		}
 });
@@ -1402,7 +1424,7 @@ playlistModule.config(['$routeProvider',
         redirectTo: '/'
       });
   }]);
-playlistModule.controller('addNewSong', function addNewSong($routeParams, $scope, $location, playlistStorage, $rootScope, $compile) {
+playlistModule.controller('addNewSong', function addNewSong($modal, $routeParams, $scope, $location, playlistStorage, $rootScope, $compile, $timeout) {
 
 	$scope.editingSong = null;
 	$scope.loader_black = '<div class = "section_loader_black"><span class = "loader_ loader_cercle_black"></span></div>';
@@ -1417,26 +1439,23 @@ playlistModule.controller('addNewSong', function addNewSong($routeParams, $scope
 	});
 	
 	$scope.submit_add_song = function(song) {
-		
+			
 		song.playlist_id = $scope.playlist_selected.id;
 		if (song.artist != "" && song.name != '' && song.url != '')
 		{
 			playlistStorage.submitNewSong(song).success(function(back) {
-				if (back.erreur == "ok")
-				{
-					$("#myModal").find('.modal-title').text("Song added to playlist !");
-					if ($('#myModal').find('.delete_song').size() > 0)
-						$('.delete_song').remove();
-					$("#myModal").modal('show');
-					setTimeout(function() {
-						$("#myModal").modal('hide');
-					}, 2000);
 
+				var m = $modal.open({
+					templateUrl : '/modalConfirmAddNewSong',
+					size: 'sm',
+				});
+				$timeout(function () {
+					m.close();
 					playlistStorage.getMusicsFromPlaylist($scope.playlist_selected.id).success(function(data) {
 						$rootScope.musics = data;
 					});
-					$scope.close(); // on close le formulaire //
-				}
+				}, 1500);
+				$scope.close();
 			});
 		}
 		return (false);
@@ -1775,8 +1794,53 @@ playlistModule.controller('Notifications', function Notifications($scope, $locat
 		});
 	}
 });
-playlistModule.controller('Search', function Search($scope, $location, playlistStorage, $compile, $rootScope, $routeParams) {
-	
+playlistModule.controller('Search', function Search($scope, $timeout, $location, playlistStorage, $compile, $rootScope, $routeParams, $filter) {
+
+	$scope.socket = playlistStorage.getSocket();
+	$scope.oldMusics = $rootScope.musics;
+	$scope.timeoutSearch = undefined;
+  $scope.results = undefined;
+
+	$scope.$watch('search_song', function (val, prev_val) {
+
+    if (!val)
+      return (false);
+		if (val.length < 3)
+      return (false);
+  	saisie = val;
+  	if ($scope.timeoutSearch > 0 || $scope.timeoutSearch == undefined)
+  	{
+    		clearTimeout($scope.timeoutSearch);
+    		$scope.timeoutSearch = setTimeout(function() {
+      		$scope.timeoutSearch = undefined;
+      		$scope.submitSearch(saisie);
+    		}, 1000);
+  	}
+	});
+
+	$scope.submitSearch = function(saisie) {
+
+  		playlistStorage.submitResearchSong(saisie, $scope.playlist_selected.id).success(function(data) {
+          if (data)
+          {
+              $rootScope.musics = data;
+          }
+      });
+	}
+
+  $scope.cancelResearch = function() {
+
+    if ($scope.search_song != '')
+    {
+      playlistStorage.getMusicsFromPlaylist($scope.playlist_selected.id).success(function(data) {
+          $rootScope.musics = data;
+          $scope.search_song = "";
+      });
+    }
+    else
+      return (false);
+  }
+
 });
 /**
  * jQuery jPages v0.7
@@ -6393,294 +6457,6 @@ $.extend(mejs.MepDefaults,
         
 })(mejs.$);
 (function(){var requirejs,require,define,__inflate;(function(e){function a(e,t){var n=t&&t.split("/"),i=r.map,s=i&&i["*"]||{},o,u,a,f,l,c,h;if(e&&e.charAt(0)==="."&&t){n=n.slice(0,n.length-1),e=n.concat(e.split("/"));for(l=0;h=e[l];l++)if(h===".")e.splice(l,1),l-=1;else if(h===".."){if(l===1&&(e[2]===".."||e[0]===".."))return!0;l>0&&(e.splice(l-1,2),l-=2)}e=e.join("/")}if((n||s)&&i){o=e.split("/");for(l=o.length;l>0;l-=1){u=o.slice(0,l).join("/");if(n)for(c=n.length;c>0;c-=1){a=i[n.slice(0,c).join("/")];if(a){a=a[u];if(a){f=a;break}}}f=f||s[u];if(f){o.splice(0,l,f),e=o.join("/");break}}}return e}function f(t,n){return function(){return u.apply(e,s.call(arguments,0).concat([t,n]))}}function l(e){return function(t){return a(t,e)}}function c(e){return function(n){t[e]=n}}function h(r){if(n.hasOwnProperty(r)){var s=n[r];delete n[r],i[r]=!0,o.apply(e,s)}if(!t.hasOwnProperty(r))throw new Error("No "+r);return t[r]}function p(e,t){var n,r,i=e.indexOf("!");return i!==-1?(n=a(e.slice(0,i),t),e=e.slice(i+1),r=h(n),r&&r.normalize?e=r.normalize(e,l(t)):e=a(e,t)):e=a(e,t),{f:n?n+"!"+e:e,n:e,p:r}}function d(e){return function(){return r&&r.config&&r.config[e]||{}}}var t={},n={},r={},i={},s=[].slice,o,u;o=function(r,s,o,u){var a=[],l,v,m,g,y,b;u=u||r,typeof o=="string"&&(o=__inflate(r,o));if(typeof o=="function"){s=!s.length&&o.length?["require","exports","module"]:s;for(b=0;b<s.length;b++){y=p(s[b],u),m=y.f;if(m==="require")a[b]=f(r);else if(m==="exports")a[b]=t[r]={},l=!0;else if(m==="module")v=a[b]={id:r,uri:"",exports:t[r],config:d(r)};else if(t.hasOwnProperty(m)||n.hasOwnProperty(m))a[b]=h(m);else if(y.p)y.p.load(y.n,f(u,!0),c(m),{}),a[b]=t[m];else if(!i[m])throw new Error(r+" missing "+m)}g=o.apply(t[r],a);if(r)if(v&&v.exports!==e&&v.exports!==t[r])t[r]=v.exports;else if(g!==e||!l)t[r]=g}else r&&(t[r]=o)},requirejs=require=u=function(t,n,i,s){return typeof t=="string"?h(p(t,n).f):(t.splice||(r=t,n.splice?(t=n,n=i,i=null):t=e),n=n||function(){},s?o(e,t,n,i):setTimeout(function(){o(e,t,n,i)},15),u)},u.config=function(e){return r=e,u},define=function(e,t,r){t.splice||(r=t,t=[]),n[e]=[e,t,r]},define.amd={jQuery:!0}})(),__inflate=function(name,src){var r;return eval(["r = function(a,b,c){","\n};\n//@ sourceURL="+name+"\n"].join(src)),r},define("lib/api/events",["require","exports","module"],function(e,t,n){t.api={LOAD_PROGRESS:"loadProgress",PLAY_PROGRESS:"playProgress",PLAY:"play",PAUSE:"pause",FINISH:"finish",SEEK:"seek",READY:"ready",OPEN_SHARE_PANEL:"sharePanelOpened",CLICK_DOWNLOAD:"downloadClicked",CLICK_BUY:"buyClicked",ERROR:"error"},t.bridge={REMOVE_LISTENER:"removeEventListener",ADD_LISTENER:"addEventListener"}}),define("lib/api/getters",["require","exports","module"],function(e,t,n){n.exports={GET_VOLUME:"getVolume",GET_DURATION:"getDuration",GET_POSITION:"getPosition",GET_SOUNDS:"getSounds",GET_CURRENT_SOUND:"getCurrentSound",GET_CURRENT_SOUND_INDEX:"getCurrentSoundIndex",IS_PAUSED:"isPaused"}}),define("lib/api/setters",["require","exports","module"],function(e,t,n){n.exports={PLAY:"play",PAUSE:"pause",TOGGLE:"toggle",SEEK_TO:"seekTo",SET_VOLUME:"setVolume",NEXT:"next",PREV:"prev",SKIP:"skip"}}),define("lib/api/api",["require","exports","module","lib/api/events","lib/api/getters","lib/api/setters"],function(e,t,n){function m(e){return!!(e===""||e&&e.charCodeAt&&e.substr)}function g(e){return!!(e&&e.constructor&&e.call&&e.apply)}function y(e){return!!e&&e.nodeType===1&&e.nodeName.toUpperCase()==="IFRAME"}function b(e){var t=!1,n;for(n in i)if(i.hasOwnProperty(n)&&i[n]===e){t=!0;break}return t}function w(e){var t,n,r;for(t=0,n=f.length;t<n;t++){r=e(f[t]);if(r===!1)break}}function E(e){var t="",n,r,i;e.substr(0,2)==="//"&&(e=window.location.protocol+e),i=e.split("/");for(n=0,r=i.length;n<r;n++){if(!(n<3))break;t+=i[n],n<2&&(t+="/")}return t}function S(e){return e.contentWindow?e.contentWindow:e.contentDocument&&"parentWindow"in e.contentDocument?e.contentDocument.parentWindow:null}function x(e){var t=[],n;for(n in e)e.hasOwnProperty(n)&&t.push(e[n]);return t}function T(e,t,n){n.callbacks[e]=n.callbacks[e]||[],n.callbacks[e].push(t)}function N(e,t){var n=!0,r;return t.callbacks[e]=[],w(function(t){r=t.callbacks[e]||[];if(r.length)return n=!1,!1}),n}function C(e,t,n){var r=S(n),i,s;if(!r.postMessage)return!1;i=n.getAttribute("src").split("?")[0],s=JSON.stringify({method:e,value:t}),i.substr(0,2)==="//"&&(i=window.location.protocol+i),i=i.replace(/http:\/\/(w|wt).soundcloud.com/,"https://$1.soundcloud.com"),r.postMessage(s,i)}function k(e){var t;return w(function(n){if(n.instance===e)return t=n,!1}),t}function L(e){var t;return w(function(n){if(S(n.element)===e)return t=n,!1}),t}function A(e,t){return function(n){var r=g(n),i=k(this),s=!r&&t?n:null,o=r&&!t?n:null;return o&&T(e,o,i),C(e,s,i.element),this}}function O(e,t,n){var r,i,s;for(r=0,i=t.length;r<i;r++)s=t[r],e[s]=A(s,n)}function M(e,t,n){return e+"?url="+t+"&"+_(n)}function _(e){var t,n,r=[];for(t in e)e.hasOwnProperty(t)&&(n=e[t],r.push(t+"="+(t==="start_track"?parseInt(n,10):n?"true":"false")));return r.join("&")}function D(e,t,n){var r=e.callbacks[t]||[],i,s;for(i=0,s=r.length;i<s;i++)r[i].apply(e.instance,n);if(b(t)||t===o.READY)e.callbacks[t]=[]}function P(e){var t,n,r,i,s;try{n=JSON.parse(e.data)}catch(u){return!1}t=L(e.source),r=n.method,i=n.value;if(t&&H(e.origin)!==H(t.domain))return!1;if(!t)return r===o.READY&&a.push(e.source),!1;r===o.READY&&(t.isReady=!0,D(t,l),N(l,t)),r===o.PLAY&&!t.playEventFired&&(t.playEventFired=!0),r===o.PLAY_PROGRESS&&!t.playEventFired&&(t.playEventFired=!0,D(t,o.PLAY,[i])),s=[],i!==undefined&&s.push(i),D(t,r,s)}function H(e){return e.replace(h,"")}var r=e("lib/api/events"),i=e("lib/api/getters"),s=e("lib/api/setters"),o=r.api,u=r.bridge,a=[],f=[],l="__LATE_BINDING__",c="http://wt.soundcloud.dev:9200/",h=/^http(?:s?)/,p,d,v;window.addEventListener?window.addEventListener("message",P,!1):window.attachEvent("onmessage",P),n.exports=v=function(e,t,n){m(e)&&(e=document.getElementById(e));if(!y(e))throw new Error("SC.Widget function should be given either iframe element or a string specifying id attribute of iframe element.");t&&(n=n||{},e.src=M(c,t,n));var r=L(S(e)),i,s;return r&&r.instance?r.instance:(i=a.indexOf(S(e))>-1,s=new p(e),f.push(new d(s,e,i)),s)},v.Events=o,window.SC=window.SC||{},window.SC.Widget=v,d=function(e,t,n){this.instance=e,this.element=t,this.domain=E(t.getAttribute("src")),this.isReady=!!n,this.callbacks={}},p=function(){},p.prototype={constructor:p,load:function(e,t){if(!e)return;t=t||{};var n=this,r=k(this),i=r.element,s=i.src,a=s.substr(0,s.indexOf("?"));r.isReady=!1,r.playEventFired=!1,i.onload=function(){n.bind(o.READY,function(){var e,n=r.callbacks;for(e in n)n.hasOwnProperty(e)&&e!==o.READY&&C(u.ADD_LISTENER,e,r.element);t.callback&&t.callback()})},i.src=M(a,e,t)},bind:function(e,t){var n=this,r=k(this);return r&&r.element&&(e===o.READY&&r.isReady?setTimeout(t,1):r.isReady?(T(e,t,r),C(u.ADD_LISTENER,e,r.element)):T(l,function(){n.bind(e,t)},r)),this},unbind:function(e){var t=k(this),n;t&&t.element&&(n=N(e,t),e!==o.READY&&n&&C(u.REMOVE_LISTENER,e,t.element))}},O(p.prototype,x(i)),O(p.prototype,x(s),!0)}),window.SC=window.SC||{},window.SC.Widget=require("lib/api/api")})()
-/******* 
-PLAYER FUNCTIONS CLASSE
-********/
-
-/*
-
-my_player = {
-
-	media_ : undefined,
-	indice_id : 0,
-	type_ : undefined,
-	cible : undefined,
-  index_cible : undefined, // index de la musique selectionnée dans le DOM //
-  id_playlist : undefined,
-  id_playlist_played : undefined,
-	class_play : "glyphicon-play",
-  class_pause : "glyphicon-pause",
-  song_selected : undefined,
-  is_playing : false,
-  widget_soundcloud : undefined,
-  has_changed_playlist : false,
-  play_sound_animation : $('<section class = "play_sound_animation"><span></span><span></span><span></span></section>'),
-  pause_sound_animation : $('<section class = "pause_sound_animation"><span>.</span><span>.</span><span>.</span></section>'),
-
-	init : function() {
-		var that = this;
-
-    if (this.id_playlist == undefined || this.id_playlist == "")
-      this.id_playlist = $('input[name="real_id_playlist"]').val();
-
-    if (that.has_changed_playlist === false)
-    {
-      var iframeElement   = document.querySelector('iframe');
-      var iframeElementID = iframeElement.id;
-      this.widget_soundcloud = SC.Widget(iframeElement);
-      this.initMediaPlayer('audio');
-    }
-    else
-    {
-      // on réaffiche l'animation css3 pour la musique sélectionnée préalablement si il y eu //
-      if (that.cible != undefined)
-        that.enable_animation_on_song_played_before();
-    }
-	},
-
-  add_animation_current_playing : function() {
-    var that = this;
-
-    that.cible.find('.pause_sound_animation').remove();
-    that.cible.append(that.play_sound_animation);
-    that.cible.find('span:first').removeClass('pause').addClass('playing').removeClass(that.class_play).addClass(that.class_pause);
-  },
-
-  add_animation_current_pausing : function() {
-    var that = this;
-
-    that.cible.find('span:first').removeClass('playing').addClass('pause').removeClass(that.class_pause).addClass(that.class_play);
-    that.cible.find('.play_sound_animation').remove();
-    that.cible.append(that.pause_sound_animation);
-  },
-
-  enable_animation_on_song_played_before : function() {
-    var that = this;
-
-    console.log("index cible : " + that.index_cible);
-    console.log("id_playlist played : " + that.id_playlist_played);
-    console.log("actuel id playlist : " + that.id_playlist);
-
-    if (that.id_playlist == that.id_playlist_played)
-    {
-      that.cible = $('.choose_music').eq(that.index_cible);
-      that.add_animation_current_playing();
-    }
-  },
-
-  play_soundcloud : function(url, target, index_) {
-
-    var that = this;
-
-    if (index_ === that.index_cible)
-    {
-      if (that.is_playing === true)
-      {
-        that.widget_soundcloud.pause();
-        that.is_playing = false;
-        that.add_animation_current_pausing();
-      }
-      else
-      {
-        that.widget_soundcloud.play();
-        that.is_playing = true;
-        that.add_animation_current_playing();
-      }
-      return (false);
-    }
-
-    if (that.indice_id !== 0)
-      $('#mep_' + this.indice_id).remove();
-
-    that.widget_soundcloud.bind(SC.Widget.Events.READY, function() {
-      $('#sc-widget').show();
-      that.widget_soundcloud.load(url, {
-        show_artwork: true,
-        auto_play : true,
-      });
-    });
-
-    if (that.cible !== undefined)
-    {
-      that.cible.find('.play_sound_animation').remove();
-      that.cible.find('span:first').removeClass(that.class_pause).addClass(that.class_play);
-      that.cible.removeClass('playing').removeClass('pause');
-    }
-
-    that.cible = target;
-    that.index_cible = index_;
-    that.is_playing = true;
-    that.cible.find('span:first').removeClass('pause').addClass('playing').removeClass(that.class_play).addClass(that.class_pause);
-    that.cible.append(that.play_sound_animation);
-
-    // on branche l'evenement finish du son chargé //
-    that.widget_soundcloud.bind(SC.Widget.Events.FINISH, function() {
-      that.cible.removeClass('border-selected');
-      that.cible.find('span:first').removeClass(that.class_pause).addClass(that.class_play).removeClass('playing');
-      var new_cible_parent = that.cible.parents('.track').next();
-      that.cible = new_cible_parent.find('.choose_music');
-      that.checkIfChangePage(index_);
-      that.cible.trigger('click');
-    });
-
-  },
-
-  checkIfChangePage : function(index_) {
-
-    var last_index = parseInt($('.jp-current').text()) * 4;
-    if (index_ == last_index)
-    {
-      var $currentPage = Math.ceil(index_ / 5);
-      $("div.holder").jPages($currentPage + 1);
-    }
-  },
-
-  play_video : function(url, type, target, index_) {
-
-      console.log('ici');
-      var that = this;
-
-      if ((index_ == that.index_cible) && (that.id_playlist == that.id_playlist_played))
-      {
-        console.log('iic');
-        // même item selectionné, on doit savoir si on met pause ou lecture //
-        // si playing, mettre pause, sinon on play //
-        if (that.is_playing === true)
-        {
-          // on met pause //
-          that.pause();
-        }
-        else
-        {
-          // on met play //
-          that.play();
-        }
-        // on return false pour ne pas aller plus loin //
-        return false;
-      }
-
-      if (that.widget_soundcloud != undefined)
-      {
-        $('#sc-widget').hide();
-        that.widget_soundcloud.pause();
-      }
-
-      that.type_ = "youtube_player";
-      //that.build_player_video();
-      $('#player_video').find('source').attr('src', url);
-      this.initMediaPlayer('video', index_);
-      $('#mep_0').hide();
-
-      setTimeout(function() {
-        that.autoplay_youtube_video(that);
-      }, 1650);
-
-      if (that.cible !== undefined)
-      {
-        that.cible.find('.play_sound_animation').remove();
-        that.cible.find('span:first').removeClass(that.class_pause).addClass(that.class_play);
-        that.cible.removeClass('playing').removeClass('pause');
-      }
-      that.cible = target;
-      that.index_cible = index_;
-      that.is_playing = true;
-      that.cible.find('span:first').removeClass('pause').addClass('playing').removeClass(that.class_play).addClass(that.class_pause);
-      that.cible.append(that.play_sound_animation);
-    },
-    
-   pause : function() {
-      var that = this;
-
-      that.media_.pause();
-      that.is_playing = false;
-      that.add_animation_current_pausing();
-   },
-
-   play : function() {
-      var that = this;
-
-      that.media_.play();
-      that.is_playing = true;
-      that.add_animation_current_playing();
-   },
-
-	 initMediaPlayer : function(type_, index_) {
-      var that = this;
-
-      console.log('rentre');
-      console.log(type_);
-      return (false);
-      var $div = $('#player_audio');
-      if (type_ == "video")
-        $div = $('#player_video');
-
-      $div = "#player_video";
-      that.media_ = new MediaElementPlayer($div, {
-        features : ['playpause','loop','current','progress','duration','volume'],
-		  success : function(mediaElement, domObject) {
-
-        console.log('création média');
-        /*
-        mediaElement.addEventListener('ended', function() {
-
-            console.log('fin du media');
-            if ($('#mep_' + that.indice_id).find('.mejs-controls').find('.mejs-loop-button').hasClass('mejs-loop-off'))
-            {
-              // on charge le prochain son //
-              that.cible.removeClass('border-selected');
-              that.cible.find('span:first').removeClass(that.class_pause).addClass(that.class_play).removeClass('playing');
-              var new_cible_parent = that.cible.parents('.track').next();
-              that.cible = new_cible_parent.find('.choose_music');
-              that.cible.trigger('click');
-              that.checkIfChangePage(index_);
-            }
-          });
-        }
-      });
-    },
-
-    build_player_video : function() {
-      var that = this;
-
-      if (this.indice_id > 0 && $('#mep_' + this.indice_id).size() > 0)
-        $('#mep_' + this.indice_id).remove();
-      var type = "";
-      if (that.type_ == "dailymotion_player")
-        type = "video/dailymotion";
-      else if (that.type_ == "youtube_player")
-        type = "video/youtube";
-      $('#mep_0').after('<video width="770" height="400" id="player_video"><source type="'+type+'" src="#" /></video>');
-      this.indice_id++;
-    },
-
-    autoplay_youtube_video : function(obj) {
-
-      $('.mejs-overlay-button').trigger('click');
-
-      // on test si la musique s'est bien chargé et avance //
-      setTimeout(function() {
-        obj.checkIfPlaying(obj);
-      }, 3200);
-    },
-
-    checkIfPlaying : function(obj) {
-
-      if (obj.media_.media.duration <= 0 && obj.media_.media.currentTime <= 0)
-      {
-        obj.cible.removeClass('border-selected');
-        obj.cible.find('span:first').removeClass(obj.class_pause).addClass(obj.class_play).removeClass('playing');
-        var new_cible_parent = obj.cible.parents('.track').next();
-        obj.cible = new_cible_parent.find('.choose_music');
-        obj.cible.trigger('click');
-      }
-    },
-}
-*/
-
-/********
-END PLAYER FUNCTIONS
-********/
-
 my_player = {
 
   media_ : undefined,
@@ -6721,40 +6497,38 @@ my_player = {
       });
   },
 
-  play_video : function(url, type, target, index, id_current_playlist)
+  play_video : function(musicClick, soundSelected, target)
   {
       var that = this;
 
-      console.log('index de la musique : ' + index);
-      console.log('id de la playlist : ' + id_current_playlist);
-      console.log('id de la playlist du dernier son joué : ' + this.id_playlist_played);
-
-      if (index === this.id_song_played && this.cible_ != undefined && ((id_current_playlist == this.id_playlist_played) || this.id_playlist_played == undefined))
+      if (soundSelected === undefined || (musicClick.id !== soundSelected.id))
       {
-          this.removeAllAnimations();
-          if (this.cible_.hasClass("playing"))
-             this.pauseMedia();
-          else if (this.cible_.hasClass("pausing"))
-              this.playMedia();
+          if (this.cible_ !== undefined)
+          {
+              this.cible_.removeClass('playing');
+              this.removeAllAnimations();
+          }
+          this.stopSoundcloudPlayer();
+          this.cible_ = target.parents('.track');
+          this.beforeCreateMedia(musicClick.url, musicClick.type_source_id);
+          this.createMedia();
+          setTimeout(function() {
+            that.autoplay_youtube_video();
+          }, 2000);
+          this.cible_.find('.span_reading').addClass(this.class_pause);
       }
       else
       {
-        if (this.cible_ != undefined)
-            this.removeAllAnimations();
-        if (this.widget_soundcloud != undefined)
-        {
-            $('#sc-widget').hide();
-            this.widget_soundcloud.pause();
-        }
-        this.cible_ = target.parents('.row');
-        this.beforeCreateMedia(url, type);
-        this.createMedia();
-        setTimeout(function() {
-          that.autoplay_youtube_video();
-        }, 2000);
-        this.id_song_played = index;
-        console.log(this.cible_.html());
-        this.cible_.find('.span_reading').addClass(this.class_pause);
+          this.removeAllAnimations();
+          $('#tracksListMusics').find('.track').each(function() {
+              if ($(this).find('.choose_music').attr('id') == musicClick.id)
+              {
+                  if (that.cible_.hasClass("playing"))
+                      that.pauseMedia();
+                  else if (that.cible_.hasClass("pausing"))
+                      that.playMedia();
+              }
+          });
       }
   },
 
@@ -6788,8 +6562,16 @@ my_player = {
           // on branche l'evenement finish du son chargé //
           that.widget_soundcloud.bind(SC.Widget.Events.FINISH, function() {
             that.cible_.find('.span_reading').removeClass(that.class_pause).addClass(that.class_play).removeClass('playing');
-            that.cible_ = that.cible_.next();
-            that.checkIfChangePage(index);
+            
+            if (that.cible_.hasClass('choose_music'))
+            {
+               var parent = that.cible_.parents('.track');
+               that.cible_ = parent.next();
+            }
+            else
+              that.cible_ = that.cible_.next();
+
+            //that.checkIfChangePage(index); NE MARCHE PAS
             that.cible_.find('.musicChosen').trigger('click');
           });
       }
@@ -6823,20 +6605,22 @@ my_player = {
                   that.first_time = false;
               else
                   that.indice_lecteur++;
-              mediaElement.addEventListener('ended', function() {                  
+              mediaElement.addEventListener('ended', function() {
                     
-                  // si l'utilisateur n'est pas sur sa playlist ou est joué l'actuel musique, alors il faut le rediriger vers elle //
-                  $('#link_sound_selected').trigger('click');
-                  setTimeout(function() {
                     // on charge le prochain son //
                     console.log('chargement du son suivant ..');
                     that.cible_.find('.span_reading').removeClass(that.class_pause).addClass(that.class_play).removeClass('playing');
                     console.log(that.cible_);
-                    that.cible_ = that.cible_.next();
+                    if (that.cible_.hasClass('choose_music'))
+                    {
+                       var parent = that.cible_.parents('.track');
+                       that.cible_ = parent.next();
+                    }
+                    else
+                      that.cible_ = that.cible_.next();
                     console.log(that.cible_);
                     that.cible_.find('.musicChosen').trigger('click');
-                    that.checkIfChangePage(that.id_song_played);
-                  },500);
+                    //that.checkIfChangePage(that.id_song_played); NE MARCHE PAS
               });
           }
       });
@@ -6883,16 +6667,32 @@ my_player = {
   removeAllAnimations : function() {
 
       $('.play_sound_animation, .pause_sound_animation').remove();
-      this.cible_.find('span:first').removeClass(this.class_pause).addClass(this.class_play);
+      this.cible_.find('.choose_music').find('.span_reading').removeClass(this.class_pause).addClass(this.class_play);
   },
 
-  recreateAnimation : function() {
+  recreateAnimation : function(soundSelected) {
+      var that = this;
 
-      console.log(this.id_song_played);
-      this.cible_ = $('.choose_music').eq(this.id_song_played).addClass("playing");
-      console.log(this.cible_);
-      this.cible_.addClass("playing");
-      this.play_animation();
+      setTimeout(function() {
+          if (soundSelected != undefined)
+          {
+            $('#tracksListMusics').find('.track').each(function() {
+                if ($(this).find('.choose_music').attr('id') == soundSelected.id)
+                {
+                    $(this).addClass('playing');
+                    that.cible_ = $(this);
+                    that.play_animation();
+                }
+            });
+          }
+      }, 0);
+  },
+
+  stopSoundcloudPlayer : function() {
+      var that = this;
+
+      $('#sc-widget').hide();
+      this.widget_soundcloud.pause();
   },
 
   checkIfChangePage : function(index_) {

@@ -28,10 +28,13 @@ block content
 			a(href="#/search/" class="no-open")
 				button(type="button" class="btn btn-primary search_song")= 'Search'
 			| 
-			div(class="btn-group")
-				select(class="form-control" style="width : 150px;" ng-model="playlist_selected" ng-options="playlist.name for playlist in playlists" ng-change="change_playlist()")
-					option(value="publish_date")'Ascending'
-
+			div(class="btn-group" dropdown is-open="")
+				button(style="min-width:140px;" type="button" class="btn btn-primary dropdown-toggle" ng-disabled="disabled") {{ playlist_selected.name }}
+					span(class="caret")
+				ul(class="dropdown-menu" role="menu")
+					li(ng-repeat="playlist in playlists")
+						a(href="#" ng-click="change_playlist(playlist)") {{playlist.name}}
+			
 			div(class="btn-group" style="float:right; margin-right:150px;")
 				include by_include/notifications_menu
 
